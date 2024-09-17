@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Card, ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";  // Import axios
+import HotDeals from "./HotDeals";
 
 
 const Deal = () => {
@@ -51,10 +52,20 @@ const Deal = () => {
                                 style={{ width: "15px" }}
                             />
                         </div>
-                        <div className="content">
+                        {/* <div className="content">
                             <h4>GIỜ VÀNG DEAL SỐC</h4>
-                            <span>Kết thúc trong:</span>
+                            <span className="text-white">Kết thúc trong:<HotDeals/></span>
+                            
+                        </div> */}
+                        <div className="content">
+                            <h4 className="title">GIỜ VÀNG DEAL SỐC</h4>
+                            <div className="timer-container">
+                                <span className="end">Kết thúc trong:</span>
+                                <HotDeals /> {/* Đây là component đếm ngược */}
+                            </div>
                         </div>
+
+
                     </div>
                     <div className="is-going-on col-4">
                         <Link>
@@ -74,26 +85,26 @@ const Deal = () => {
                     {/* Lặp qua danh sách sản phẩm và hiển thị */}
                     {products.length > 0 ? (
                         products.map((item, index) => {
-                            
-                                return (
-                                    <Card className="col-2 m-2" key={item.id}>
-                                        <Card.Img
-                                            src={`./img/${JSON.parse(item.photo)[0]}`}
 
-                                            
-                                            alt={JSON.parse(item.photo)[0]}                                         
-                                        />
-                                        <Card.Body>
-                                            <Card.Title>{item.name}</Card.Title>
-                                            <Card.Text>{item.title}</Card.Text>
-                                        </Card.Body>
-                                        <ListGroup className="list-group-flush">
-                                            <ListGroup.Item>{item.price}</ListGroup.Item>
-                                            <ListGroup.Item>Tặng sạc cáp nhanh 25w trị giá 250k</ListGroup.Item>
-                                        </ListGroup>
-                                    </Card>
-                                );
-                            
+                            return (
+                                <Card className="col-2 m-2" key={item.id}>
+                                    <Card.Img
+                                        src={`./img/${JSON.parse(item.photo)[0]}`}
+
+
+                                        alt={JSON.parse(item.photo)[0]}
+                                    />
+                                    <Card.Body>
+                                        <Card.Title>{item.name}</Card.Title>
+                                        <Card.Text>{item.title}</Card.Text>
+                                    </Card.Body>
+                                    <ListGroup className="list-group-flush">
+                                        <ListGroup.Item>{item.price}</ListGroup.Item>
+                                        <ListGroup.Item>Tặng sạc cáp nhanh 25w trị giá 250k</ListGroup.Item>
+                                    </ListGroup>
+                                </Card>
+                            );
+
                         })
                     ) : (
                         <div>Không có sản phẩm nào để hiển thị</div>
