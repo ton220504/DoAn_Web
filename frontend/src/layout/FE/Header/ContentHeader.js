@@ -16,6 +16,14 @@ const ContentHeader = () => {
     const [user, setUser] = useState(null); // Trạng thái lưu người dùng
     const [category, setCategory] = useState([]);
     const navigate = useNavigate(); // Hook để điều hướng trang
+    const [show, setShow] = useState(false);
+    const [showUser, setShowUser] = useState(false);
+
+    const handleMouseEnter = () => setShow(true);
+    const handleMouseLeave = () => setShow(false);
+
+    const handleMouseEnterUser = () => setShowUser(true);
+    const handleMouseLeaveUser = () => setShowUser(false);
 
     useEffect(() => {
         const fetchcategory = async () => {
@@ -75,7 +83,11 @@ const ContentHeader = () => {
             <div className="container">
                 <div className="row">
                     <div className="col-2 category">
-                        <Dropdown>
+                        <Dropdown
+                            onMouseEnter={handleMouseEnter}
+                            onMouseLeave={handleMouseLeave}
+                            show={show}
+                        >
                             <Dropdown.Toggle variant="warning" id="dropdown-basic">
                                 Danh mục sản phẩm
                             </Dropdown.Toggle>
@@ -111,7 +123,11 @@ const ContentHeader = () => {
                         <div className="function">
                             <div className="text-white">
                                 {user ? (
-                                    <Dropdown>
+                                    <Dropdown
+                                        onMouseEnter={handleMouseEnterUser}
+                                        onMouseLeave={handleMouseLeaveUser}
+                                        show={showUser}
+                                    >
                                         <Dropdown.Toggle className="text-white" variant="toggle" id="dropdown-basic">
                                             <FaUser />
                                             <span className="text-white">{user.name}</span>

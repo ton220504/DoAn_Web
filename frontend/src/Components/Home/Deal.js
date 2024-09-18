@@ -1,12 +1,13 @@
 
-
-
-
 import { useEffect, useState } from "react";
 import { Card, ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";  // Import axios
 import HotDeals from "./HotDeals";
+import numeral from 'numeral';
+import '../../assets/css/Deal.css'; // Đảm bảo rằng đường dẫn đến file CSS là chính xác
+
+
 
 
 const Deal = () => {
@@ -14,11 +15,17 @@ const Deal = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+
+    const formatCurrency = (value) => {
+        return numeral(value).format('0,0') + ' ₫';
+    };
+
+
     // Gọi API khi component được mount
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/products?page=1");
+                const response = await axios.get("http://localhost:8000/api/products?page=3");
 
                 // Kiểm tra nếu response.data có trường chứa sản phẩm
                 if (Array.isArray(response.data.data)) {
@@ -87,21 +94,29 @@ const Deal = () => {
                         products.map((item, index) => {
 
                             return (
-                                <Card className="col-2 m-2" key={item.id}>
-                                    <Card.Img
-                                        src={`./img/${JSON.parse(item.photo)[0]}`}
+                                <Card className="box col-2 m-2" key={item.id}>
+                                    <Link>
+                                        <Card.Img
+                                            src={`./img/${JSON.parse(item.photo)[0]}`}
 
 
-                                        alt={JSON.parse(item.photo)[0]}
-                                    />
-                                    <Card.Body>
-                                        <Card.Title>{item.name}</Card.Title>
-                                        <Card.Text>{item.title}</Card.Text>
-                                    </Card.Body>
-                                    <ListGroup className="list-group-flush">
-                                        <ListGroup.Item>{item.price}</ListGroup.Item>
-                                        <ListGroup.Item>Tặng sạc cáp nhanh 25w trị giá 250k</ListGroup.Item>
-                                    </ListGroup>
+                                            alt={JSON.parse(item.photo)[0]}
+                                        />
+                                    </Link>
+                                    <div>
+                                        <p className="text_name">{item.name}</p>
+                                        {/* <Card.Text>{item.description}</Card.Text> */}
+                                    </div>
+                                    {/* <ListGroup className="list-group-flush">
+                                        <ListGroup.Item className="text_price text-red" >Giá: {formatCurrency(item.price)}</ListGroup.Item>
+                                        <ListGroup.Item className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</ListGroup.Item>
+                                    </ListGroup> */}
+                                    <div className="list-group-flush">
+                                        <hr />
+                                        <p className="text_price" >Giá: {formatCurrency(item.price)}</p>
+                                        <hr />
+                                        <p className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</p>
+                                    </div>
                                 </Card>
                             );
 

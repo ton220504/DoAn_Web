@@ -1,0 +1,21 @@
+.text_name{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 2;
+    font-weight:bold;
+    
+    
+    
+}
+.text_price{
+    
+    color: red;
+    font-weight: bold;
+}
+.text_plus{
+    font-style: oblique;
+    color: gray;
+}
+

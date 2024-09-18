@@ -21,7 +21,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Product::with("category", "stocks")->paginate(4);
+        return Product::with("category", "stocks")->paginate(5);
     }
 
     public function show($id)
@@ -33,6 +33,16 @@ class ProductController extends Controller
         }
         return $product;
     }
+
+
+    public function showAll()
+    {
+        return Product::with("category", "stocks")->paginate(20);
+    }
+
+
+
+
 
     // public function store(StoreProduct $request)
     // {

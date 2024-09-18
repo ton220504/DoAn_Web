@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductDealsController;
 use App\Http\Controllers\ProductShoppingCartController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductCategoriesController;
 use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,12 @@ Route::get('/products/{id}', 'App\Http\Controllers\ProductController@show');
 Route::post('/products', 'App\Http\Controllers\ProductController@store');
 Route::delete('/products/{id}', 'App\Http\Controllers\ProductController@destroy');
 Route::put('/products/{id}', 'App\Http\Controllers\ProductController@update');
+Route::get('/product', 'App\Http\Controllers\ProductController@showAll');//show all product
+
+
+Route::get('/product/category/{id}', [ProductCategoriesController::class, 'getProductsByCategory']);
+
+
 
 Route::get('/product/hot-deal', [ProductDealsController::class, 'hotDeals']);
 Route::post('/stripe', 'App\Http\Controllers\ProductOrdersController@stripePost');
@@ -86,3 +93,6 @@ Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::get('/post', [PostController::class, 'index']);
 Route::get('/post/{id}', [PostController::class, 'show']);
+
+
+//25
