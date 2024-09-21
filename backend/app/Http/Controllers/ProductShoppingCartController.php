@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Models\User;
 use App\Models\Stock;
 use App\Models\Product;
 use App\Models\ShoppingCart;
@@ -10,18 +12,23 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProductShoppingCartController extends Controller
 {
-    public function index(Request $request)
+    // public function index(Request $request)
+    // {
+
+    //     $user = JWTAuth::parseToken()->authenticate();
+
+    //     $cartList = $user->cartItems()
+    //         ->with('stock.product')
+    //         ->orderBy('id', 'desc')
+    //         ->get();
+
+    //     return $cartList;
+    // }
+    public function index()
     {
-
-        $user = JWTAuth::parseToken()->authenticate();
-
-        $cartList = $user->cartItems()
-            ->with('stock.product')
-            ->orderBy('id', 'desc')
-            ->get();
-
-        return $cartList;
+        return ShoppingCart::all();
     }
+
 
     public function store(Request $request)
     {
@@ -113,16 +120,29 @@ class ProductShoppingCartController extends Controller
     public function destroy($id)
     {
 
-        $user = JWTAuth::parseToken()->authenticate();
+        // $user = JWTAuth::parseToken()->authenticate();
 
-        if ($user) {
-            $cartItem = $user->cartItems()->findOrFail($id);
+        // if ($user) {
+        //     $cartItem = $user->cartItems()->findOrFail($id);
 
-            if ($cartItem)
-                $cartItem->delete();
+        //     if ($cartItem)
+        //         $cartItem->delete();
+        // }
+
+        // return $cartItem;
+        try {
+            $cartItem = ShoppingCart::find($id);
+
+            if (!$cartItem) {
+                return response()->json(['error' => 'Item not found'], 404);
+            }
+
+            $cartItem->delete();
+
+            return response()->json(['message' => 'Item deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
-
-        return $cartItem;
     }
 
 
@@ -130,5 +150,14 @@ class ProductShoppingCartController extends Controller
     {
         $user = JWTAuth::parseToken()->authenticate();
         return $user->cartItems()->pluck('stock_id')->toArray();
+        // $cartItems = $request->session()->get('cartItems', []);
+
+        // // Thêm sản phẩm vào giỏ hàng (dùng $productId làm ví dụ)
+        // $cartItems[] = $productId;
+
+        // // Lưu lại giỏ hàng vào session
+        // $request->session()->put('cartItems', $cartItems);
+
+        // return response()->json(['message' => 'Sản phẩm đã được thêm vào giỏ hàng']);
     }
 }

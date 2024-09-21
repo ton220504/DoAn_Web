@@ -39,6 +39,27 @@ class ProductCategoriesController extends Controller
         return response()->json($products, 200);
     }
 
+    public function getProductsByCategoryPaginate($id)
+    {
+        // Kiểm tra nếu category tồn tại trước khi tìm sản phẩm
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        // Lấy tất cả sản phẩm thuộc category_id
+        $products = Product::with('category', 'stocks')
+            ->where('category_id', $id)
+            ->paginate(10);
+
+        // Kiểm tra nếu không có sản phẩm nào thuộc category này
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No products found for this category'], 404);
+        }
+
+        return response()->json($products, 200);
+    }
+
 
 
     /**

@@ -3,6 +3,9 @@ import Policy from "./policy";
 import Popular from "./popular_categories";
 import Follow from "./Follow";
 import Banner from "./Banner";
+import ProductiPhone from "./Product/ProductiPhone";
+import ProductSamsung from "./Product/ProductSamsung";
+
 //import Deal from "./Deal";
 
 
@@ -57,6 +60,9 @@ const Home = () => {
             <Policy />
             <Popular />
             <Banner />
+            <ProductiPhone/>
+            <ProductSamsung/>
+            
             <Follow />
         </>
 

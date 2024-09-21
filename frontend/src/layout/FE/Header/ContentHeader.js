@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dropdown } from "react-bootstrap";
-import { FaUser, FaShoppingCart } from "react-icons/fa";
+import { FaUser, FaShoppingCart, FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -18,12 +18,11 @@ const ContentHeader = () => {
     const navigate = useNavigate(); // Hook để điều hướng trang
     const [show, setShow] = useState(false);
     const [showUser, setShowUser] = useState(false);
-
     const handleMouseEnter = () => setShow(true);
     const handleMouseLeave = () => setShow(false);
-
     const handleMouseEnterUser = () => setShowUser(true);
     const handleMouseLeaveUser = () => setShowUser(false);
+    const [cartItemCount, setCartItemCount] = useState(0); // Đếm sản phẩm giỏ hàng
 
     useEffect(() => {
         const fetchcategory = async () => {
@@ -47,6 +46,9 @@ const ContentHeader = () => {
         const token = localStorage.getItem("token");
         if (token) {
             getUserData(token); // Lấy thông tin người dùng nếu có token
+            getCartAndWishlistCounts(token);
+        } else {
+            updateCartAndWishlistCounts(); // Lấy số lượng giỏ hàng và wishlist từ localStorage
         }
     }, []);
 
@@ -78,6 +80,27 @@ const ContentHeader = () => {
         window.location.reload(); // Tải lại trang
     };
 
+    const getCartAndWishlistCounts = async (token) => {
+        try {
+            const cartResponse = await axios.get("http://127.0.0.1:8000/api/product/cart-list/count", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const cartCountFromBackend = cartResponse.data.length;
+            // Cập nhật số lượng giỏ hàng và wishlist
+            setCartItemCount(cartCountFromBackend);
+        } catch (error) {
+            console.error("Lỗi lấy dữ liệu từ backend:", error);
+        }
+    };
+
+    // Lấy số lượng giỏ hàng và wishlist từ localStorage khi không có token
+    const updateCartAndWishlistCounts = () => {
+        const cartList = JSON.parse(localStorage.getItem("cartList")) || [];
+
+        setCartItemCount(cartList.length);
+
+    };
+
     return (
         <div className="content-header">
             <div className="container">
@@ -92,9 +115,14 @@ const ContentHeader = () => {
                                 Danh mục sản phẩm
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
+
+                                <Dropdown.Item href="/tat-ca-san-pham">
+                                    Tất cả sản phẩm
+                                </Dropdown.Item>
+
                                 {category.length > 0 ? (
                                     category.map((cate) => (
-                                        <Dropdown.Item key={cate.id} href="#">
+                                        <Dropdown.Item key={cate.id} href="">
                                             {cate.name}
                                         </Dropdown.Item>
                                     ))
@@ -129,7 +157,7 @@ const ContentHeader = () => {
                                         show={showUser}
                                     >
                                         <Dropdown.Toggle className="text-white" variant="toggle" id="dropdown-basic">
-                                            <FaUser />
+                                            <FaUser style={{ width: "20px", height: "20px" }} />
                                             <span className="text-white">{user.name}</span>
                                         </Dropdown.Toggle>
 
@@ -152,9 +180,15 @@ const ContentHeader = () => {
                                 )}
                             </div>
                             <div className="ms-3 text-white">
-                                <Link to="/cart">
-                                    <FaShoppingCart />
-                                    <span className="ms-1">Giỏ hàng</span>
+                                <Link to="/gio-hang">
+                                    <FaShoppingCart style={{ width: "20px", height: "20px" }} />
+                                    <span className="ms-1">{cartItemCount > 0 && cartItemCount}</span>
+                                </Link>
+                            </div>
+                            <div className="ms-3 text-white " >
+                                <Link to="/yeu-thich">
+                                    <FaHeart style={{ width: "20px", height: "20px" }} />
+                                    <span className="ms-1"></span>
                                 </Link>
                             </div>
                         </div>

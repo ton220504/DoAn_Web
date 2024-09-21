@@ -7,6 +7,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layoutfontend from './layout/FE/layout';
 import Login from './page/Login';
 import Register from './page/Register';
+import ProductDetail from './page/Product/ProductDetail';
+import Cart from './page/Product/Cart';
+import AllProduct from './page/Product/AllProduct';
+import ProductByCategory from './page/Product/ProductByCategory';
+import Pay from './Components/Home/Product/Pay';
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
 function App() {
   return (
@@ -19,6 +24,11 @@ function App() {
           <Route path="tableU" element={<TableUsers />} />
           <Route path="login" element={<Login />} />
           <Route path="dangki" element={<Register />} />
+          <Route path="chi-tiet-san-pham/:id" element={<ProductDetail />} />
+          <Route path="gio-hang" element={<Cart />} />
+          <Route path="tat-ca-san-pham" element={<AllProduct />} />
+          <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
+          <Route path="thanh-toan" element={<Pay />} />
         </Route>
       </Routes>
     </BrowserRouter>

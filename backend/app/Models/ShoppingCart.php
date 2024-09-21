@@ -17,4 +17,5 @@ class ShoppingCart extends Model
     {
         return $this->belongsTo('App\Models\Stock');
     }
+
 }

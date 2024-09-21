@@ -507,3 +507,72 @@ code {
 
   }
 }
+
+
+.my-deal-phone {
+  // background: #d6d2ec;
+  border-radius: 10px;
+
+  .content {
+
+    .box-deal {
+      display: flex;
+      //box-sizing: content-box;
+
+      .set-time {
+        //padding: 15px;
+
+        .icon {
+          margin-top: 10px;
+          margin-right: 10px;
+          //box-sizing: content-box;
+          //width: 15px;
+        }
+
+        display: flex;
+        box-sizing: border-box;
+      }
+
+      .is-going-on {
+        text-align: center;
+
+        //justify-content: center;
+
+        a {
+          text-decoration: none;
+          color: white;
+        }
+      }
+
+      .coming-soon {
+        text-align: center;
+
+        //justify-content: flex-end;
+
+        a {
+          text-decoration: none;
+          color: white;
+        }
+      }
+    }
+
+    .content-deal {
+      justify-content: center;
+
+      //margin-right: 2px;
+      .col-2 {
+        box-sizing: content-box;
+
+        //margin-right: 20px;
+        //box-sizing: border-box;
+        .img {
+          transition: all .5s ease;
+        }
+
+        .img:hover {
+          transform: scale(0.9);
+        }
+      }
+    }
+  }
+}
