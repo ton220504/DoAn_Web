@@ -110,16 +110,15 @@ const ContentHeader = () => {
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                             show={show}
+                            onToggle={(isOpen) => setShow(isOpen)} // Thêm để kiểm soát
                         >
-                            <Dropdown.Toggle variant="warning" id="dropdown-basic">
+                            <Dropdown.Toggle className="dropdown-toggle" variant="warning" id="dropdown-basic">
                                 Danh mục sản phẩm
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-
                                 <Dropdown.Item href="/tat-ca-san-pham">
                                     Tất cả sản phẩm
                                 </Dropdown.Item>
-
                                 {category.length > 0 ? (
                                     category.map((cate) => (
                                         <Dropdown.Item key={cate.id} href="">
@@ -131,6 +130,7 @@ const ContentHeader = () => {
                                 )}
                             </Dropdown.Menu>
                         </Dropdown>
+
                     </div>
                     <div className="col-6 hot-product">
                         <b> Sản phẩm HOT:</b>
@@ -148,43 +148,66 @@ const ContentHeader = () => {
                         ))}
                     </div>
                     <div className="col-4">
-                        <div className="function">
-                            <div className="text-white">
-                                {user ? (
-                                    <Dropdown
-                                        onMouseEnter={handleMouseEnterUser}
-                                        onMouseLeave={handleMouseLeaveUser}
-                                        show={showUser}
-                                    >
-                                        <Dropdown.Toggle className="text-white" variant="toggle" id="dropdown-basic">
-                                            <FaUser style={{ width: "20px", height: "20px" }} />
-                                            <span className="text-white">{user.name}</span>
-                                        </Dropdown.Toggle>
+                        <div className="function user">
 
-                                        <Dropdown.Menu>
-                                            <Dropdown.Item className="text-black" onClick={() => navigate("/my-account")}>
-                                                My Account
-                                            </Dropdown.Item>
-                                            <Dropdown.Item className="text-black" onClick={() => navigate("/track-my-order")}>
-                                                Track My Order
-                                            </Dropdown.Item>
-                                            <Dropdown.Divider />
-                                            <Dropdown.Item className="text-black" onClick={logout}>Đăng xuất</Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                ) : (
-                                    <div onClick={handleLoginClick} style={{ cursor: "pointer" }}>
-                                        <FaUser />
-                                        <span className="ms-1">Đăng nhập</span>
-                                    </div>
-                                )}
-                            </div>
-                            <div className="ms-3 text-white">
+                            {user ? (
+                                <Dropdown
+                                    onMouseEnter={handleMouseEnterUser}
+                                    onMouseLeave={handleMouseLeaveUser}
+                                    show={showUser}
+                                    onToggle={(isOpen) => setShowUser(isOpen)}
+                                >
+                                    <Dropdown.Toggle className="text-white" variant="toggle" id="dropdown-basic">
+                                        <FaUser style={{ width: "20px", height: "20px" }} />
+                                        <span className="text-white">{user.name}</span>
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item className="text-black" >
+                                            Tài khoản của tôi
+                                        </Dropdown.Item>
+                                        <Dropdown.Item className="text-black" >
+                                            Thông tin cá nhân
+                                        </Dropdown.Item>
+                                        <Dropdown.Divider />
+                                        <Dropdown.Item className="text-black" onClick={logout}>
+                                            Đăng xuất
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            ) : (
+                                <div className="text-white" onClick={handleLoginClick} style={{ cursor: "pointer" }}>
+                                    <FaUser style={{ width: "20px", height: "20px" }} />
+                                    <span className="text-white">Đăng nhập</span>
+                                </div>
+                            )}
+
+
+                            <div className="ms-3 text-white position-relative">
                                 <Link to="/gio-hang">
                                     <FaShoppingCart style={{ width: "20px", height: "20px" }} />
-                                    <span className="ms-1">{cartItemCount > 0 && cartItemCount}</span>
+                                    {cartItemCount > 0 && (
+                                        <span
+                                            className="badge bg-danger text-white"
+                                            style={{
+                                                position: "absolute",
+                                                top: "-5px",
+                                                right: "-10px",
+                                                borderRadius: "50%",
+                                                width: "20px",
+                                                height: "20px",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                fontSize: "12px"
+                                            }}
+                                        >
+                                            {cartItemCount}
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
+
                             <div className="ms-3 text-white " >
                                 <Link to="/yeu-thich">
                                     <FaHeart style={{ width: "20px", height: "20px" }} />

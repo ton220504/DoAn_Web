@@ -118,6 +118,63 @@ code {
 
   //display: none;
 }
+.category {
+  position: relative; /* Để đảm bảo dropdown hiển thị đúng vị trí */
+}
+
+.dropdown-menu {
+  margin-top: 0; /* Loại bỏ khoảng cách trên */
+  position: absolute; /* Để dropdown không bị ảnh hưởng bởi các thuộc tính khác */
+}
+
+.category:hover .dropdown-menu {
+    display: block; /* Hiển thị dropdown khi hover vào phần tử cha */
+}
+
+
+
+
+
+//----------------------------------------------------------------------
+.user {
+  position: relative; /* Để định vị dropdown một cách chính xác */
+}
+
+.user:hover .dropdown-menu {
+  display: block; /* Hiện dropdown khi hover vào phần tử cha */
+}
+
+.user .dropdown-toggle {
+  background: transparent; /* Không có nền */
+  border: none; /* Không có viền */
+  color: white; /* Màu chữ */
+  cursor: pointer; /* Con trỏ chuột thay đổi khi hover */
+}
+
+.user .dropdown-toggle:hover {
+  color: #ffc107; /* Thay đổi màu chữ khi hover */
+}
+
+.dropdown-menu {
+  position: absolute; /* Để dropdown hiện bên dưới nút */
+  top: 100%; /* Hiện bên dưới nút */
+  left: 0; /* Để canh trái */
+  top: 0;
+  z-index: 1000; /* Để dropdown hiện lên trên các thành phần khác */
+  display: none; /* Ẩn dropdown mặc định */
+  margin: 0; /* Xóa khoảng cách mặc định */
+  padding: 0; /* Xóa khoảng padding mặc định */
+  background-color: #343a40; /* Màu nền cho dropdown */
+  border: 1px solid rgba(0, 0, 0, 0.15); /* Viền cho dropdown */
+  border-radius: 0.25rem; /* Bo tròn viền */
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1); /* Đổ bóng cho dropdown */
+}
+
+
+
+
+
+
 
 //.banner {}
 

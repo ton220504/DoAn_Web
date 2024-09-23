@@ -45,8 +45,19 @@ const AllProduct = () => {
     };
 
     if (loading) {
-        return <div>Đang tải...</div>;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh' // chiều cao 100% của viewport,
+                
+            }}>
+                <img style={{width:"100px", height:"100px"}} src="./img/loading-gif-png-5.gif"/>
+            </div>
+        );
     }
+    
 
     return (
         <>

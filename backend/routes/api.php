@@ -78,7 +78,7 @@ Route::get('/product/cart-list/count', [ProductShoppingCartController::class, 'c
 Route::delete('/product/cart-list/{id}', [ProductShoppingCartController::class, 'destroy']);//21
 Route::get('/product/cart-list', [ProductShoppingCartController::class, 'index']);//22
 Route::post('/product/cart-list', 'App\Http\Controllers\ProductShoppingCartController@store');//23
-Route::put('/product/cart-list/{id}', 'App\Http\Controllers\ProductShoppingCartController@guestCart');//24
+Route::put('/product/cart-list/{id}', 'App\Http\Controllers\ProductShoppingCartController@update');//24
 
 Route::get('/product/wishlist/count', 'App\Http\Controllers\ProductWishlistController@count');
 Route::get('/product/wishlist', 'App\Http\Controllers\ProductWishlistController@index');

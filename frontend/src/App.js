@@ -11,7 +11,8 @@ import ProductDetail from './page/Product/ProductDetail';
 import Cart from './page/Product/Cart';
 import AllProduct from './page/Product/AllProduct';
 import ProductByCategory from './page/Product/ProductByCategory';
-import Pay from './Components/Home/Product/Pay';
+import Pay from './page/Product/Pay';
+
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
 function App() {
   return (
@@ -28,8 +29,9 @@ function App() {
           <Route path="gio-hang" element={<Cart />} />
           <Route path="tat-ca-san-pham" element={<AllProduct />} />
           <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
-          <Route path="thanh-toan" element={<Pay />} />
+          
         </Route>
+        <Route path="thanh-toan" element={<Pay />} />
       </Routes>
     </BrowserRouter>
   );

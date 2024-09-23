@@ -26,7 +26,10 @@ class ProductShoppingCartController extends Controller
     // }
     public function index()
     {
-        return ShoppingCart::all();
+        // return ShoppingCart::all();
+        $user = JWTAuth::parseToken()->authenticate(); // Lấy thông tin người dùng từ token
+        $cartItems = ShoppingCart::where('user_id', $user->id)->get(); // Lấy giỏ hàng của người dùng
+        return response()->json($cartItems);
     }
 
 

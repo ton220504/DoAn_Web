@@ -14,18 +14,12 @@ import Swal from "sweetalert2";
 const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantity }) => {
     const [activeTab, setActiveTab] = useState('des');
     const [isShow, setIsShow] = useState(false);
-    //const [color, setColor] = useState('Silver');
+   
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
-    // const [cartList, setCartList] = useState([]);
-    // const [localCartList, setLocalCartList] = useState(null);
-    // const ip = 'http://127.0.0.1:8000'; // Adjust this to match your API base URL
-
-    const [cartLoading, setCartLoading] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
-    const [cartButtonInit, setCartButtonInit] = useState(true); // Kiểm soát trạng thái nút thêm giỏ hàng
+    
 
 
     const navigate = useNavigate();
@@ -51,10 +45,30 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
         fetchProduct();
     }, [id]);  // Đảm bảo chỉ gọi khi ID thay đổi
     if (loading) {
-        return <div>Đang tải...</div>;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh' // chiều cao 100% của viewport,
+                
+            }}>
+                <img style={{width:"100px", height:"100px"}} src="../../../img/loading-gif-png-5.gif"/>
+            </div>
+        );
     }
     if (!product) {
-        return <div>Đang tải...</div>;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh' // chiều cao 100% của viewport,
+                
+            }}>
+                <img style={{width:"100px", height:"100px"}} src="../../../img/loading-gif-png-5.gif"/>
+            </div>
+        );
     }
     const addToCart = async () => {
         try {

@@ -14,7 +14,7 @@ const Header = () => (
                 </div>
                 <div className="col-xl-7 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-12">
                     <div className="search ">
-                        <input type="text" placeholder="Bạn muốn tìm gì" className="form-control" />
+                        <input type="search" placeholder="Bạn muốn tìm gì" className="form-control" />
                         <button className="icon-search">
                             <CiSearch />
                         </button>

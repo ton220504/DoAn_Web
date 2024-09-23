@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
-import "../../../scss/Pay.scss"
+import "../../scss/Cart.scss"
 import { SiCashapp } from "react-icons/si";
 
 const Pay = () => {
