@@ -90,9 +90,9 @@ const Footer = () => {
                 </div>
 
             </div >
-            <div className="bottoo-footer bg-info text-center" style={{ height: "50px" }}>
-                Design bởi Hồ Ngọc Dũng<br />
-                hongocdung@gmaill.com
+            <div className="bottoo-footer text-center" style={{ height: "50px" }}>
+                <p>Design bởi Hồ Ngọc Dũng</p>
+                
             </div>
         </>
 

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../scss/AllProduct.scss";
 import ComeBack from "../../Components/ComeBack";
 import numeral from "numeral";
-import axios from "axios";
+import Axios from "axios";
 import { Card } from "react-bootstrap";
 
 import "../../../src/assets/css/pagination.css";
@@ -13,32 +13,30 @@ const AllProduct = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalItemsCount, setTotalItemsCount] = useState(0);
     const [perPage, setPerPage] = useState(0);
+    const [total, setTotal] = useState(0);
+    const [totalItemsCount, setTotalItemsCount] = useState(0);
+
 
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
     };
 
-    const getProducts = async (pageNumber = 1) => {
-        setLoading(true);
-        try {
-            const result = await axios.get(`http://127.0.0.1:8000/api/product?page=${pageNumber}`);
-            console.log(result.data.data); // Log dữ liệu từ API để kiểm tra
-            setCurrentPage(result.data.data.currentPage );
-            setPerPage(result.data.data.perPage);
-            setTotalItemsCount(result.data.data.totalItemsCount || 0);
-            setProducts(result.data.data); // Giả sử dữ liệu sản phẩm nằm trong thuộc tính 'products'
-        } catch (error) {
-            console.error("Error fetching products:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const getProducts = useCallback((pageNumber = 1) => {
+        setLoading(true); // Set loading to true before fetching data
+        Axios.get(`http://127.0.0.1:8000/api/product?page=${pageNumber}`).then((result) => {
+            setCurrentPage(result.data.current_page);
+            setPerPage(result.data.per_page);
+            setTotal(result.data.total);
+            setProducts(result.data.data);
+            setLoading(false); // Data fetched, set loading to false
+        });
+    }, []);
 
+    // Similar to componentDidMount
     useEffect(() => {
-        getProducts(currentPage);
-    }, [currentPage]);
+        getProducts();
+    }, [getProducts]);
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
@@ -51,13 +49,13 @@ const AllProduct = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh' // chiều cao 100% của viewport,
-                
+
             }}>
-                <img style={{width:"100px", height:"100px"}} src="./img/loading-gif-png-5.gif"/>
+                <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" />
             </div>
         );
     }
-    
+
 
     return (
         <>
@@ -77,9 +75,14 @@ const AllProduct = () => {
                     <div className="product-item row">
                         {products.length > 0 ? (
                             products.map((item) => (
-                                <Card className="box col-2 m-2" key={item.id}>
+                                <Card className="box col-2 m-2 product-card" key={item.id}>
+                                    <div className="discount-badge">-9%</div> {/* Phần giảm giá */}
+                                    <div className="favorite-icon">
+                                        <i className="far fa-heart"></i> {/* Nút trái tim */}
+                                    </div>
                                     <Link to={`/chi-tiet-san-pham/${item.id}`}>
                                         <Card.Img
+                                            className="product-image"
                                             src={`./img/${JSON.parse(item.photo)[0]}`}
                                             alt={JSON.parse(item.photo)[0]}
                                         />
@@ -98,18 +101,27 @@ const AllProduct = () => {
                         ) : (
                             <div>Không có sản phẩm nào để hiển thị</div>
                         )}
+                        <div style={{ float: "left" }}>
+                            {products.length > 0 && total > perPage && (
+                                <div className="pagination-container">
+                                    <Pagination
+                                        activePage={currentPage}
+                                        itemsCountPerPage={perPage}
+                                        totalItemsCount={total}
+                                        pageRangeDisplayed={5}
+                                        onChange={(pageNumber) => getProducts(pageNumber)}
+                                        itemClass="page-item"
+                                        linkClass="page-link"
+                                        firstPageText="Đầu"
+                                        lastPageText="Cuối"
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Phân trang */}
-                    <Pagination
-                        activePage={currentPage}
-                        itemsCountPerPage={perPage}
-                        totalItemsCount={totalItemsCount}
-                        pageRangeDisplayed={5}
-                        onChange={handlePageChange}
-                        itemClass="page-item"
-                        linkClass="page-link"
-                    />
+
                 </section>
             </div>
         </>

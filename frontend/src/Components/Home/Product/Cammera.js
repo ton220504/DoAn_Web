@@ -7,7 +7,7 @@ import '../../../scss/Accessory.scss'
 
 //import AccessoryItem from "../Product/AccessoryItem";
 
-const ProductiPhone = () => {
+const Cammera = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const ProductiPhone = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get("http://127.0.0.1:8000/api/product/category/paginate/2");
+                const response = await axios.get("http://127.0.0.1:8000/api/product/category/paginate/3");
 
                 // Kiểm tra nếu response.data có trường chứa sản phẩm
                 if (Array.isArray(response.data.data)) {
@@ -61,24 +61,24 @@ const ProductiPhone = () => {
             <section className="content container">
                 <div className="title-index">
                     <Link className="name-title">
-                        <span className="phukien-link">iPhone</span>Nổi bật
+                        <span className="phukien-link">Máy ảnh</span>Nổi bật
                     </Link>
                     <div className="link-title">
-                        <Link>iPhone 15 </Link>
+                        {/* <Link>iPhone 15 </Link>
                         <Link>iPhone 14 </Link>
                         <Link>iPhone 13 </Link>
                         <Link>iPhone 12 </Link>
-                        <Link>iPhone 11 </Link>
+                        <Link>iPhone 11 </Link> */}
                     </div>
 
                 </div>
                 <div className="my-deal-phone container p-3 mt-3">
                     <section className="content container">
-                        <div className="content-deal row p-2">
+                    <div className="content-deal row p-2">
                             {/* Lặp qua danh sách sản phẩm và hiển thị */}
                             {products.length > 0 ? (
                                 products.map((item) => (
-                                    <Card className="box col-2 m-2 iPhone-cart" key={item.id}>
+                                    <Card className="box col-2 m-2" key={item.id}>
                                         <div className="discount-badge">-9%</div> {/* Phần giảm giá */}
                                         <div className="favorite-icon">
                                             <i className="far fa-heart"></i> {/* Nút trái tim */}
@@ -107,7 +107,6 @@ const ProductiPhone = () => {
                                 <div>Không có sản phẩm nào để hiển thị</div>
                             )}
                         </div>
-
                     </section>
                 </div>
 
@@ -116,4 +115,4 @@ const ProductiPhone = () => {
         </div >
     )
 }
-export default ProductiPhone;
+export default Cammera;

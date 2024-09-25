@@ -8,7 +8,7 @@ const ContentHeader = () => {
     const [menu, setMenu] = useState([
         { id: 1, name: "iPhone 15" },
         { id: 2, name: "Xiaomi" },
-        { id: 3, name: "Sam sung" },
+        { id: 3, name: "Samsung" },
         { id: 4, name: "Galaxy S23" },
         { id: 5, name: "Realme C25s" }
     ]);
@@ -64,6 +64,7 @@ const ContentHeader = () => {
             .catch(() => {
                 localStorage.removeItem("token"); // Xóa token nếu xảy ra lỗi
                 setUser(null); // Xóa thông tin người dùng
+                window.location.reload(); // Tải lại trang
             });
     };
 
@@ -121,7 +122,7 @@ const ContentHeader = () => {
                                 </Dropdown.Item>
                                 {category.length > 0 ? (
                                     category.map((cate) => (
-                                        <Dropdown.Item key={cate.id} href="">
+                                        <Dropdown.Item key={cate.id} href={`/san-pham-theo-loai/${cate.id}`}>
                                             {cate.name}
                                         </Dropdown.Item>
                                     ))
@@ -147,6 +148,7 @@ const ContentHeader = () => {
                             </div>
                         ))}
                     </div>
+
                     <div className="col-4">
                         <div className="function user">
 

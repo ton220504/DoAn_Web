@@ -41,7 +41,17 @@ const ProductSamsung = () => {
 
     // Nếu đang loading, hiển thị loading text
     if (loading) {
-        return <div>Đang tải...</div>;
+        return (
+            <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100vh' // chiều cao 100% của viewport,
+
+            }}>
+                <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" />
+            </div>
+        );
     }
 
 
@@ -57,45 +67,41 @@ const ProductSamsung = () => {
                         <Link>Galaxy S Series </Link>
                         <Link>Galaxy Note Series </Link>
                         <Link>Galaxy S Series </Link>
-                        
+
                     </div>
 
                 </div>
                 <div className="my-deal-phone container p-3 mt-3">
                     <section className="content container">
-                        <div className="content-deal row p-2">
+                    <div className="content-deal row p-2">
                             {/* Lặp qua danh sách sản phẩm và hiển thị */}
                             {products.length > 0 ? (
-                                products.map((item, index) => {
-
-                                    return (
-                                        <Card className="box col-2 m-2" key={item.id}>
-                                            <Link to={`chi-tiet-san-pham/${item.id}`}>
-                                                <Card.Img
-                                                    src={`./img/${JSON.parse(item.photo)[0]}`}
-
-
-                                                    alt={JSON.parse(item.photo)[0]}
-                                                />
-                                            </Link>
-                                            <div>
-                                                <p className="text_name">{item.name}</p>
-                                                {/* <Card.Text>{item.description}</Card.Text> */}
-                                            </div>
-                                            {/* <ListGroup className="list-group-flush">
-                                        <ListGroup.Item className="text_price text-red" >Giá: {formatCurrency(item.price)}</ListGroup.Item>
-                                        <ListGroup.Item className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</ListGroup.Item>
-                                    </ListGroup> */}
-                                            <div className="list-group-flush">
-                                                <hr />
-                                                <p className="text_price" >Giá: {formatCurrency(item.price)}</p>
-                                                <hr />
-                                                <p className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</p>
-                                            </div>
-                                        </Card>
-                                    );
-
-                                })
+                                products.map((item) => (
+                                    <Card className="box col-2 m-2" key={item.id}>
+                                        <div className="discount-badge">-9%</div> {/* Phần giảm giá */}
+                                        <div className="favorite-icon">
+                                            <i className="far fa-heart"></i> {/* Nút trái tim */}
+                                        </div>
+                                        <Link to={`/chi-tiet-san-pham/${item.id}`}>
+                                            <Card.Img
+                                                className="product-image"
+                                                src={`./img/${JSON.parse(item.photo)[0]}`}
+                                                alt={JSON.parse(item.photo)[0]}
+                                            />
+                                        </Link>
+                                        <div className="official-badge">Chính Hãng 100%</div> {/* Chính hãng */}
+                                        <div>
+                                            <p className="text_name">{item.name}</p>
+                                        </div>
+                                        <div className="list-group-flush">
+                                            <hr />
+                                            
+                                            <p className="text_price">Giá: {formatCurrency(item.price)}</p>
+                                            <hr />
+                                            <p className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</p>
+                                        </div>
+                                    </Card>
+                                ))
                             ) : (
                                 <div>Không có sản phẩm nào để hiển thị</div>
                             )}

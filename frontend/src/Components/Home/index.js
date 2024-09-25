@@ -5,6 +5,9 @@ import Follow from "./Follow";
 import Banner from "./Banner";
 import ProductiPhone from "./Product/ProductiPhone";
 import ProductSamsung from "./Product/ProductSamsung";
+import Laptop from "./Product/Laptop";
+import Cammera from "./Product/Cammera";
+import Headphones from "./Product/Headphones";
 
 //import Deal from "./Deal";
 
@@ -62,6 +65,9 @@ const Home = () => {
             <Banner />
             <ProductiPhone/>
             <ProductSamsung/>
+            <Laptop/>
+            <Cammera/>
+            <Headphones/>
             
             <Follow />
         </>

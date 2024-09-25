@@ -50,7 +50,7 @@ const Register = (props) => {
                 localStorage.setItem("token", result.data.token);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Bạn đã đăng ký thành công!',
+                    title: 'Đăng ký thành công!',
                 }).then(()=>{
                     navigate("/login");
                 });

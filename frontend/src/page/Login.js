@@ -27,7 +27,7 @@ const Login = () => {
                 localStorage.setItem("token", result.data.token);
                 Swal.fire({
                     icon: 'success',
-                    title: 'Bạn đã đăng nhập thành công!',
+                    title: 'Đăng nhập thành công!',
                     confirmButtonText: 'OK'
                 }).then(() => {
                     // Chuyển hướng đến trang chủ sau khi người dùng nhấn nút "OK"
