@@ -3,7 +3,7 @@ import axios from 'axios';
 import numeral from 'numeral';
 import { Link } from 'react-router-dom';
 
-const ProductCartDetail = ({ id, onPriceChange }) => {
+const ProductWishListDetail = ({ id, onPriceChange }) => {
     const [product, setProduct] = useState(null);
 
     const formatCurrency = (value) => {
@@ -54,4 +54,4 @@ const ProductCartDetail = ({ id, onPriceChange }) => {
     );
 }
 
-export default ProductCartDetail;
+export default ProductWishListDetail;

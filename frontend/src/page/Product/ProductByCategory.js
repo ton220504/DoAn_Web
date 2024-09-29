@@ -11,6 +11,8 @@ import "../../../src/assets/css/pagination.css";
 
 import { useCallback } from "react";
 import Pagination from "react-js-pagination";
+import Swal from "sweetalert2";
+import axios from "axios";
 
 
 const ProductByCategory = () => {
@@ -21,11 +23,61 @@ const ProductByCategory = () => {
     const [perPage, setPerPage] = useState(0);
     const [total, setTotal] = useState(0);
     const { id } = useParams();
+    const [favoriteProducts, setFavoriteProducts] = useState([]); // Lưu trữ danh sách sản phẩm yêu thích
 
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
     };
 
+
+    const handleAddToWishlist = async (productId) => { // Nhận productId làm tham số
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Bạn cần đăng nhập để thêm sản phẩm vào danh sách yêu thích!',
+                confirmButtonText: 'Đăng nhập ngay'
+            }).then(() => {
+                // Chuyển hướng đến trang đăng nhập
+                window.location.href = "/login"; // Đường dẫn đến trang đăng nhập
+            });
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/api/product/wishlist', {
+                productId: productId // Gửi productId trong yêu cầu
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 405) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sản phẩm đã có trong danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra, vui lòng thử lại!',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    };
 
 
     const getProducts = useCallback((pageNumber = 1) => {
@@ -81,9 +133,10 @@ const ProductByCategory = () => {
                             products.map((item) => (
                                 <Card className="box col-2 m-2" key={item.id}>
                                     <div className="discount-badge">-9%</div> {/* Phần giảm giá */}
-                                    <div className="favorite-icon">
-                                        <i className="far fa-heart"></i> {/* Nút trái tim */}
-                                    </div>
+                                    <div className="favorite-icon" onClick={() => handleAddToWishlist(item.id)}>
+                                            {/* Đổi icon dựa trên trạng thái yêu thích */}
+                                            <i className={favoriteProducts.includes(item.id) ? "fas fa-heart" : "far fa-heart"}></i>
+                                        </div>
                                     <Link to={`/chi-tiet-san-pham/${item.id}`}>
                                         <Card.Img
                                             src={`../img/${JSON.parse(item.photo)[0]}`}

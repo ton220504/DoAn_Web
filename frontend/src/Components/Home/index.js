@@ -8,6 +8,7 @@ import ProductSamsung from "./Product/ProductSamsung";
 import Laptop from "./Product/Laptop";
 import Cammera from "./Product/Cammera";
 import Headphones from "./Product/Headphones";
+import ToastMessage from "../ToastMessage";
 
 //import Deal from "./Deal";
 
@@ -60,6 +61,7 @@ const Home = () => {
                 </div>
 
             </div>
+            <ToastMessage/>
             <Policy />
             <Popular />
             <Banner />

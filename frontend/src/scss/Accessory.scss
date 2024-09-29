@@ -193,7 +193,8 @@
 .text_price {
     color: red;
     font-size: 18px;
-    font-weight: bold;
+    font-weight:bold;
+    
 }
 
 /* Định dạng mô tả thêm */
@@ -203,14 +204,14 @@
 }
 
 /* Định dạng chung cho Card */
-.iPhone-cart {
+.item-cart {
     transition: opacity 0.3s ease;
     /* Hiệu ứng mờ mượt */
     
 }
 
 /* Khi hover vào sản phẩm, mờ đi */
-.iPhone-cart:hover {
+.item-cart:hover {
     opacity: 0.5;
     
     

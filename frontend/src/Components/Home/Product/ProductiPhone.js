@@ -3,18 +3,71 @@ import { Card, ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import numeral from 'numeral';
 import axios from "axios";
+import Swal from "sweetalert2";
 import '../../../scss/Accessory.scss'
-
-//import AccessoryItem from "../Product/AccessoryItem";
+//import { ToastContainer, toast } from 'react-toastify';
 
 const ProductiPhone = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
+    const [favoriteProducts, setFavoriteProducts] = useState([]); // Lưu trữ danh sách sản phẩm yêu thích
 
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
+    };
+
+    const handleAddToWishlist = async (productId) => { // Nhận productId làm tham số
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Bạn cần đăng nhập để thêm sản phẩm vào danh sách yêu thích!',
+                confirmButtonText: 'Đăng nhập ngay'
+            }).then(() => {
+                // Chuyển hướng đến trang đăng nhập
+                window.location.href = "/login"; // Đường dẫn đến trang đăng nhập
+            });
+            return;
+        }
+
+        try {
+            const response = await axios.post('http://127.0.0.1:8000/api/product/wishlist', {
+                productId: productId // Gửi productId trong yêu cầu
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 200) {
+                setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    
+                    window.location.reload();
+                });
+                
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 405) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sản phẩm đã có trong danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra, vui lòng thử lại!',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
     };
 
     useEffect(() => {
@@ -47,18 +100,16 @@ const ProductiPhone = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh' // chiều cao 100% của viewport,
-
             }}>
                 <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" />
             </div>
         );
     }
 
-
     return (
-
         <div className="accessory mt-5">
             <section className="content container">
+                
                 <div className="title-index">
                     <Link className="name-title">
                         <span className="phukien-link">iPhone</span>Nổi bật
@@ -70,7 +121,6 @@ const ProductiPhone = () => {
                         <Link>iPhone 12 </Link>
                         <Link>iPhone 11 </Link>
                     </div>
-
                 </div>
                 <div className="my-deal-phone container p-3 mt-3">
                     <section className="content container">
@@ -78,10 +128,11 @@ const ProductiPhone = () => {
                             {/* Lặp qua danh sách sản phẩm và hiển thị */}
                             {products.length > 0 ? (
                                 products.map((item) => (
-                                    <Card className="box col-2 m-2 iPhone-cart" key={item.id}>
+                                    <Card className="box col-2 m-2 item-cart" key={item.id}>
                                         <div className="discount-badge">-9%</div> {/* Phần giảm giá */}
-                                        <div className="favorite-icon">
-                                            <i className="far fa-heart"></i> {/* Nút trái tim */}
+                                        <div className="favorite-icon" onClick={() => handleAddToWishlist(item.id)}>
+                                            {/* Đổi icon dựa trên trạng thái yêu thích */}
+                                            <i className={favoriteProducts.includes(item.id) ? "fas fa-heart" : "far fa-heart"}></i>
                                         </div>
                                         <Link to={`/chi-tiet-san-pham/${item.id}`}>
                                             <Card.Img
@@ -96,7 +147,6 @@ const ProductiPhone = () => {
                                         </div>
                                         <div className="list-group-flush">
                                             <hr />
-                                            
                                             <p className="text_price">Giá: {formatCurrency(item.price)}</p>
                                             <hr />
                                             <p className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</p>
@@ -107,13 +157,11 @@ const ProductiPhone = () => {
                                 <div>Không có sản phẩm nào để hiển thị</div>
                             )}
                         </div>
-
                     </section>
                 </div>
-
-            </section >
-
-        </div >
+            </section>
+        </div>
     )
 }
+
 export default ProductiPhone;

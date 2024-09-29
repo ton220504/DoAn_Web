@@ -23,6 +23,7 @@ const ContentHeader = () => {
     const handleMouseEnterUser = () => setShowUser(true);
     const handleMouseLeaveUser = () => setShowUser(false);
     const [cartItemCount, setCartItemCount] = useState(0); // Đếm sản phẩm giỏ hàng
+    const [WishListItemCount, setWishListItemCount] = useState(0);
 
     useEffect(() => {
         const fetchcategory = async () => {
@@ -87,8 +88,19 @@ const ContentHeader = () => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const cartCountFromBackend = cartResponse.data.length;
+
+            const wishlistResponse = await axios.get("http://127.0.0.1:8000/api/product/wishlist/count", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const wishlistCountFromBackend = wishlistResponse.data.length; // Số lượng sản phẩm trong wishlist
+
+
+
+
+
             // Cập nhật số lượng giỏ hàng và wishlist
             setCartItemCount(cartCountFromBackend);
+            setWishListItemCount(wishlistCountFromBackend); // Cập nhật số lượng wishlist
         } catch (error) {
             console.error("Lỗi lấy dữ liệu từ backend:", error);
         }
@@ -97,7 +109,10 @@ const ContentHeader = () => {
     // Lấy số lượng giỏ hàng và wishlist từ localStorage khi không có token
     const updateCartAndWishlistCounts = () => {
         const cartList = JSON.parse(localStorage.getItem("cartList")) || [];
+        const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
+
+        setWishListItemCount(wishlist.length); // Cập nhật số lượng wishlist từ localStorage
         setCartItemCount(cartList.length);
 
     };
@@ -185,7 +200,7 @@ const ContentHeader = () => {
                             )}
 
 
-                            <div className="ms-3 text-white position-relative">
+                            <div className="ms-5 text-white position-relative">
                                 <Link to="/gio-hang">
                                     <FaShoppingCart style={{ width: "20px", height: "20px" }} />
                                     {cartItemCount > 0 && (
@@ -193,7 +208,7 @@ const ContentHeader = () => {
                                             className="badge bg-danger text-white"
                                             style={{
                                                 position: "absolute",
-                                                top: "-5px",
+                                                top: "-7px",
                                                 right: "-10px",
                                                 borderRadius: "50%",
                                                 width: "20px",
@@ -210,10 +225,28 @@ const ContentHeader = () => {
                                 </Link>
                             </div>
 
-                            <div className="ms-3 text-white " >
+                            <div className="ms-5 text-white position-relative " >
                                 <Link to="/yeu-thich">
                                     <FaHeart style={{ width: "20px", height: "20px" }} />
-                                    <span className="ms-1"></span>
+                                    {WishListItemCount > 0 && (
+                                        <span
+                                            className="badge bg-danger text-white"
+                                            style={{
+                                                position: "absolute",
+                                                top: "-7px",
+                                                right: "-10px",
+                                                borderRadius: "50%",
+                                                width: "20px",
+                                                height: "20px",
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                fontSize: "12px"
+                                            }}
+                                        >
+                                            {WishListItemCount}
+                                        </span>
+                                    )}
                                 </Link>
                             </div>
                         </div>

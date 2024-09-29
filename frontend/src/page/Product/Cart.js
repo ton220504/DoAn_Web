@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Button, Table, Toast } from 'react-bootstrap';
 import ComeBack from "../../Components/ComeBack";
 import { toast } from 'react-toastify';
-import ProductCartDetail from './ProductCartDetail';
+
 import numeral from 'numeral';
 import { Link, Navigate } from 'react-router-dom';
 import "../../scss/Cart.scss";
@@ -80,7 +80,7 @@ const Cart = () => {
 
     const tinhTongTien = () => {
         return product.reduce((total, item) => {
-            const price = productPrices[item.stock_id] || 0;
+            const price = item.price || 0;
             return total + thanhtien(price, item.quantity);
         }, 0);
     };
@@ -155,7 +155,7 @@ const Cart = () => {
         <>
             <ComeBack />
             <div className="mynocart container mt-2">
-                <h5 className="title-cart">Giỏ hàng của bạn</h5>
+            <h5 className="title-cart" style={{color:"red", fontSize:"20px", fontWeight:"bolder",fontStyle:"italic", paddingTop:"10px", paddingBottom:"10px"}}>Giỏ hàng của bạn</h5>
             </div>
             {product.length === 0 ? (
                 <div className="content-nocart container text-center mt-5" style={{ height: "200px" }}>
@@ -180,17 +180,29 @@ const Cart = () => {
                                 <tr key={index}>
                                     <td>
                                         <div className="product-detail">
-                                            <ProductCartDetail id={item.stock_id} onPriceChange={(price) => handlePriceChange(item.stock_id, price)} className="ProductCartDetail" />
+                                            {/* <ProductCartDetail id={item.stock_id} onPriceChange={(price) => handlePriceChange(item.stock_id, price)} className="ProductCartDetail" /> */}
+                                            <div className="col-md-3 product-img">
+                                                <Link to={`/chi-tiet-san-pham/${item.stock_id}`}>
+                                                    <img
+                                                        style={{ width: "100px", height: "100px" }}
+                                                        className="img"
+                                                        src={`../../../img/${item.photo}`}
+                                                        alt={item.name}
+                                                    />
+                                                </Link>
+                                            </div>
+                                            <div style={{ fontWeight: "bold" }}>{item.name}</div>
+
                                         </div>
                                         <span style={{ color: "red", cursor: "pointer" }} onClick={() => handleDeleteProduct(item.id)}>Xóa</span>
                                     </td>
-                                    <td style={{ fontWeight: "bold", color: "blue" }} className="money">{formatCurrency(productPrices[item.stock_id] || "Đang tải...")}</td>
+                                    <td style={{ fontWeight: "bold", color: "blue" }} className="money">{formatCurrency(item.price)}</td>
                                     <td className="money">
                                         <button onClick={() => handleDecrement(item.id)}>-</button>
                                         <input className='text-center' value={item.quantity} readOnly style={{ width: "30px" }} />
                                         <button onClick={() => handleIncrement(item.id)}>+</button>
                                     </td>
-                                    <td style={{ fontWeight: "bold", color: "red" }} className="money">{formatCurrency(thanhtien(productPrices[item.stock_id], item.quantity))}</td>
+                                    <td style={{ fontWeight: "bold", color: "red" }} className="money">{formatCurrency(thanhtien(item.price, item.quantity))}</td>
                                 </tr>
                             ))}
                         </tbody>

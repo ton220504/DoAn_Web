@@ -14,6 +14,7 @@ import ProductByCategory from './page/Product/ProductByCategory';
 import Pay from './page/Product/Pay';
 import Layoutbackend from './layout/BE/layout';
 import Approuter from './router';
+import WishList from './page/Product/WishList';
 
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
 function App() {
@@ -43,6 +44,7 @@ function App() {
           <Route path="dangki" element={<Register />} />
           <Route path="chi-tiet-san-pham/:id" element={<ProductDetail />} />
           <Route path="gio-hang" element={<Cart />} />
+          <Route path="yeu-thich" element={<WishList />} />
           <Route path="tat-ca-san-pham" element={<AllProduct />} />
           <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
 

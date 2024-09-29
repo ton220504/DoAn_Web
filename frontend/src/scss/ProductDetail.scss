@@ -45,7 +45,7 @@
             .product-price {
                 margin-top: 20px;
 
-                p {
+                a {
                     font-size: 28px;
                     color: red;
                     font-weight: bold;
@@ -70,9 +70,9 @@
                     font-weight: bold;
                     transition: background-color 0.2s;
 
-                    &:hover {
-                        background-color: #503eb6;
-                    }
+                    // &:hover {
+                    //     background-color: #503eb6;
+                    // }
                 }
 
                 span {
@@ -97,7 +97,7 @@
                 .btn-2 {
                     button {
                         border: 1px solid #503eb6;
-                        border-radius: 5px;
+                        border-radius: 10px;
                         height: 50px;
                         width: 48%;
                     }
@@ -129,8 +129,10 @@
                 position: relative;
 
                 .policies {
-                    border: 1px solid #010005;
+                    border: 1px solid #6b54c6;
                     background-color: #f1f1f1;
+                    border-radius: 10px;
+                    
 
                     p {
                         border-bottom: 1px dotted black;
@@ -141,19 +143,30 @@
                         padding: 5px;
                         background: #6b54c6;
                         text-align: center;
+                        border-top-left-radius: 10px;
+                        border-top-right-radius: 10px;
+                        color: white;
+                        font-weight: bold;
+
                     }
                 }
 
                 .recommendations {
                     margin-top: 20px;
-                    border: 1px solid #010005;
+                    border: 1px solid #6b54c6;
                     background-color: #f1f1f1;
+                    border-radius: 10px;
+                    
 
 
                     .section-title {
                         padding: 5px;
                         background: #6b54c6;
                         text-align: center;
+                        border-top-left-radius: 10px;
+                        border-top-right-radius: 10px;
+                        color: white;
+                        font-weight: bold;
                     }
 
                     .recommendation-item {
@@ -218,4 +231,155 @@
 
     //display: flex;
 
+}
+
+.btn-shopping{
+    background-color: #503eb6;
+    color: white;
+    border-radius: 10px;
+    border-color: white;
+}
+.price-old{
+    color: gray;
+}
+//-------------------chỉnh ảnh-----------------------
+.product-images {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    
+    
+}
+.main-image{
+    overflow: hidden;
+    object-fit: cover;
+   
+    
+}
+
+.main-image img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    
+    transition: transform 0.5s ease; /* Hiệu ứng mượt */
+    
+}
+
+.thumbnail-images {
+    display: flex;
+    gap: 10px;
+    
+    //justify-content: center; /* Thêm để căn giữa ảnh nhỏ */
+    overflow: hidden; /* Ẩn các ảnh không nằm trong khung */
+    width: 100%; /* Chiều rộng khung vừa với ảnh to */
+    padding: 10px 0;
+    cursor: grab;
+    
+}
+.thumbnail-images:active {
+    cursor: grabbing;
+}
+
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    object-fit: cover;
+    border: 2px solid transparent;
+    transition: border 0.3s ease;
+   
+}
+
+.thumbnail.active {
+    border: 2px solid #503eb6; /* Viền đen khi được chọn */
+    
+}
+.thumbnail.active {
+    border: 2px solid #503eb6;
+}
+.scroll-button {
+    position: absolute;
+    bottom: 4%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 10;
+    font-size: 18px;
+}
+
+.scroll-button.left {
+    left: 0;
+}
+
+.scroll-button.right {
+    right: 0;
+}
+
+.scroll-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+.slide-left {
+    transform: translateX(-100%);
+}
+
+.slide-right {
+    transform: translateX(100%);
+}
+
+.slide-enter {
+    transform: translateX(0);
+}
+.quantity-selection {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid gray; /* Viền ngoài của khung số lượng */
+    border-radius: 5px; /* Bo góc nhẹ */
+}
+
+.quantity-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border: 1px solid gray;
+    border-left: none; /* Xóa viền trái của nút + */
+    border-right: none; /* Xóa viền phải của nút - */
+    cursor: pointer;
+}
+
+.quantity-btn:first-of-type {
+    border-left: 1px solid gray; /* Viền trái của nút trừ (-) */
+}
+
+.quantity-btn:last-of-type {
+    border-right: 1px solid gray; /* Viền phải của nút cộng (+) */
+}
+
+.quantity-input {
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    border: none;
+    border-right: 1px solid gray;
+    border-left: 1px solid gray;
+}
+
+.quantity-input:focus {
+    outline: none; /* Xóa viền mặc định khi click */
 }

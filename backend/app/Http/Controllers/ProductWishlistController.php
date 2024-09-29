@@ -54,18 +54,32 @@ class ProductWishlistController extends Controller
 
     public function destroy($id)
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        if ($user) {
-            $item = $user->wishlistProducts()->findOrFail($id);
-            if ($item)
-                $item->delete();
+        // $user = JWTAuth::parseToken()->authenticate();
+        // if ($user) {
+        //     $item = $user->wishlistProducts()->findOrFail($id);
+        //     if ($item)
+        //         $item->delete();
+        // }
+        // return $user->wishlistProducts()->count();
+        try {
+            $WishListItem = Wishlist::find($id);
+
+            if (!$WishListItem) {
+                return response()->json(['error' => 'Item not found'], 404);
+            }
+
+            $WishListItem->delete();
+
+            return response()->json(['message' => 'Item deleted successfully'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Internal Server Error'], 500);
         }
-        return $user->wishlistProducts()->count();
     }
 
     public function count(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
-        return $user->wishlistProducts()->count();
+        //return $user->wishlistProducts()->count();
+        return $user->wishlistProducts()->pluck('product_id')->toArray();
     }
 }

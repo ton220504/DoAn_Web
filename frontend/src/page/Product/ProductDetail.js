@@ -1,5 +1,5 @@
 import { FaShoppingCart } from "react-icons/fa";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ComeBack from "../../Components/ComeBack";
 import "../../scss/ProductDetail.scss";
@@ -11,30 +11,101 @@ import Swal from "sweetalert2";
 
 
 
-const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantity }) => {
+const ProductDetail = () => {
     const [activeTab, setActiveTab] = useState('des');
     const [isShow, setIsShow] = useState(false);
-   
     const [quantity, setQuantity] = useState(1);
+    const [name, setName] = useState('')
+    const [price, setPrice] = useState(0)
+
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
-    
-
-
     const navigate = useNavigate();
+
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [images, setImages] = useState([]);
+    const [slideDirection, setSlideDirection] = useState(''); // Quản lý hướng trượt
+
+
+    const thumbnailRef = useRef(null); // Ref để quản lý container ảnh nhỏ
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    //user
+    const [loadingUser, setLoadingUser] = useState(true);
+    const [user, setUser] = useState(null);
+
+
+
 
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
     };
+    const handleImageClick = (image, direction) => {
+        // Thiết lập hướng trượt khi thay đổi ảnh
+        setSlideDirection(direction);
+        setTimeout(() => {
+            setSelectedImage(image); // Cập nhật ảnh to sau khi animation kết thúc
+            setSlideDirection(''); // Xóa hướng trượt sau khi animation kết thúc
+        }, 500); // Khớp với thời gian transition
+    };
+
+
+    const scrollThumbnails = (direction) => {
+        const container = thumbnailRef.current;
+        const scrollAmount = 100; // Số pixel cuộn mỗi lần
+        container.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth', // Cuộn mượt mà
+        });
+    };
+
+    const handleMouseDown = (e) => {
+        setIsDragging(true);
+        setStartX(e.pageX - thumbnailRef.current.offsetLeft);
+        setScrollLeft(thumbnailRef.current.scrollLeft);
+    };
+
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - thumbnailRef.current.offsetLeft;
+        const walk = (x - startX); // Nhân đôi tốc độ kéo
+        thumbnailRef.current.scrollLeft = scrollLeft - walk;
+    };
+
+    
+
+
+
+
 
     useEffect(() => {
         const fetchProduct = async () => {
+            setLoading(true); // Bắt đầu quá trình tải dữ liệu
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/products/${id}`);
 
-                // Cập nhật state với đối tượng sản phẩm
-                setProduct(response.data);
+                const fetchedProduct = response.data;
+                setProduct(fetchedProduct);
+                setName(fetchedProduct.name); // Cập nhật tên sản phẩm
+                setPrice(fetchedProduct.price); // Cập nhật giá sản phẩm
+
+                // Cập nhật danh sách ảnh và ảnh được chọn
+                const imageList = JSON.parse(fetchedProduct.photo);
+                setImages(imageList);
+                setSelectedImage(imageList[0]);
+
                 setLoading(false);  // Dừng loading sau khi đã fetch dữ liệu xong
             } catch (error) {
                 console.error("Lỗi khi gọi API:", error);
@@ -43,7 +114,7 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
         };
 
         fetchProduct();
-    }, [id]);  // Đảm bảo chỉ gọi khi ID thay đổi
+    }, [id]);
     if (loading) {
         return (
             <div style={{
@@ -51,9 +122,9 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh' // chiều cao 100% của viewport,
-                
+
             }}>
-                <img style={{width:"100px", height:"100px"}} src="../../../img/loading-gif-png-5.gif"/>
+                <img style={{ width: "100px", height: "100px" }} src="../../../img/loading-gif-png-5.gif" />
             </div>
         );
     }
@@ -64,53 +135,65 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: '100vh' // chiều cao 100% của viewport,
-                
+
             }}>
-                <img style={{width:"100px", height:"100px"}} src="../../../img/loading-gif-png-5.gif"/>
+                <img style={{ width: "100px", height: "100px" }} src="../../../img/loading-gif-png-5.gif" />
             </div>
         );
     }
     const addToCart = async () => {
+        // Kiểm tra nếu người dùng chưa đăng nhập
+        const token = localStorage.getItem("token");
+        if (!token) {
+            // Hiển thị thông báo yêu cầu đăng nhập
+            Swal.fire({
+                icon: 'error',
+                title: 'Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng!',
+                confirmButtonText: 'Đăng nhập ngay'
+            }).then(() => {
+                // Chuyển hướng người dùng đến trang đăng nhập
+                navigate('/login'); // Đường dẫn đến trang đăng nhập
+            });
+            return; // Kết thúc hàm nếu chưa đăng nhập
+        }
+    
+        // Nếu người dùng đã đăng nhập, tiếp tục thêm sản phẩm vào giỏ hàng
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/product/cart-list', {
-                stockId: id, // Thay thế với `stockId` nếu bạn cần
-                quantity: quantity
+                stockId: id, // ID sản phẩm
+                quantity: quantity, // Số lượng sản phẩm
+                name: name, // Tên sản phẩm
+                price: price, // Giá sản phẩm
+                photo: selectedImage // Đường dẫn hình ảnh sản phẩm
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                    Authorization: `Bearer ${token}`
                 }
             });
-
+    
             if (response.status === 200) {
-                //toast.success("Sản phẩm đã được thêm vào giỏ hàng!");
-                // Cập nhật giỏ hàng sau khi thêm sản phẩm
-                //getShoppingCartList();
                 Swal.fire({
                     icon: 'success',
                     title: 'Thêm vào giỏ hàng thành công',
                     confirmButtonText: 'OK'
                 }).then(() => {
-                    // Chuyển hướng đến trang chủ sau khi người dùng nhấn nút "OK"
                     navigate(`/chi-tiet-san-pham/${id}`);
                     window.location.reload();
-
                 });
             } else {
-                 toast.error("Không thể thêm sản phẩm vào giỏ hàng!");
-
+                toast.error("Không thể thêm sản phẩm vào giỏ hàng!");
             }
         } catch (error) {
-            // console.error("Lỗi khi thêm sản phẩm vào giỏ hàng:", error);
             toast.error("Có lỗi xảy ra, vui lòng thử lại sau!");
             Swal.fire({
                 icon: 'error',
                 title: 'Sản phẩm đã thêm vào giỏ hàng!',
-                //confirmButtonText: 'OK'
             });
         }
     };
-
     
+
+
     const incrementQuantity = () => setQuantity(quantity + 1);
     const decrementQuantity = () => {
         if (quantity > 1) setQuantity(quantity - 1);
@@ -124,44 +207,86 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
             <div className="productdetail container">
                 <div className='detail row'>
                     <div className="col-md-3 product-img">
-                        <img className='img' src={`../../../img/${JSON.parse(product.photo)[0]}`} />
+                        {/* <img className='img' src={`../../../img/${JSON.parse(product.photo)[0]}`} /> */}
+                        <div className="product-images">
+                            {/* Phần hiển thị ảnh to */}
+                            <div className="main-image">
+                                <img
+                                    className={`img ${slideDirection === 'left' ? 'slide-left' : slideDirection === 'right' ? 'slide-right' : 'slide-enter'}`}
+                                    src={`../../../img/${selectedImage}`} alt="Product" value={selectedImage} />
+                            </div>
+
+                            {/* Phần hiển thị các ảnh nhỏ */}
+                            <button className="scroll-button left" onClick={() => scrollThumbnails('left')}>
+                                &lt;
+                            </button>
+                            <div className="thumbnail-images"
+                                ref={thumbnailRef}
+                                onMouseDown={handleMouseDown}
+                                onMouseLeave={handleMouseLeave}
+                                onMouseUp={handleMouseUp}
+                                onMouseMove={handleMouseMove}
+                            >
+
+                                {images.map((image, index) => (
+                                    <div key={index}>
+                                        <img
+
+                                            className={`thumbnail ${selectedImage === image ? 'active' : ''}`}
+                                            src={`../../../img/${image}`}
+                                            alt="Product Thumbnail"
+                                            onClick={() => handleImageClick(image, index > images.indexOf(selectedImage) ? 'right' : 'left')} // Xác định hướng trượt dựa trên ảnh đã chọn
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            <button className="scroll-button right" onClick={() => scrollThumbnails('right')}>
+                                &gt;
+                            </button>
+
+
+                        </div>
                     </div>
+
                     <div className='col-md-6 product-form'>
 
                         {/* Header Section */}
                         <div className="product-header">
-                            <h1>{product.name}</h1>
-                            <span>{product.brand}</span>
+                            <h1 value={name}>{product.name}</h1>
+                            <span value={price}>{product.brand}</span>
                             <span>Tình trạng: Còn hàng</span>
                         </div>
 
                         {/* Price and Storage Options */}
                         <div className="product-price">
-                            <p>Giá: {formatCurrency(product.price)}</p>
-                            <span>Giá cũ: <strike className="text-danger">10.000.000đ</strike></span>
-                            {/* <div className="storage-options">
-                                <label>
-                                    <input type="radio" value="64GB" checked={storage === '64GB'} onChange={handleStorageChange} />
-                                    64GB - 5.990.000₫
-                                </label>
-                                <label>
-                                    <input type="radio" value="256GB" checked={storage === '256GB'} onChange={handleStorageChange} />
-                                    256GB - 6.590.000₫
-                                </label>
-                            </div> */}
+                            <p>Giá:
+                                <a> {formatCurrency(product.price)}</a>
+                            </p>
+
+                            <span>Giá cũ: <strike className="price-old">10.000.000đ</strike></span>
+
                         </div>
                         {/* Quantity Selection */}
-                        <div className="quantity-selection">
+                        {/* <div className="quantity-selection">
                             <span >Số lượng</span>
                             <button onClick={decrementQuantity}>-</button>
-                            <input className='text-center' value={quantity} readOnly style={{ width: "30px" }} />
+                            <input className='text-center' value={quantity} readOnly style={{ width: "50px" }} />
                             <button onClick={incrementQuantity}>+</button>
+                        </div> */}
+                        <div className="quantity-selection">
+                            <span>Số lượng</span>
+                            <div className="quantity-controls">
+                                <button className="quantity-btn" onClick={decrementQuantity}>-</button>
+                                <input className="quantity-input text-center" value={quantity} readOnly />
+                                <button className="quantity-btn" onClick={incrementQuantity}>+</button>
+                            </div>
                         </div>
+
 
                         {/* Call-to-Action Buttons */}
                         <div className="action-buttons">
                             <div className="btn-1 ">
-                                <button className="btn btn-warning">
+                                <button className="btn-shopping">
                                     <FaShoppingCart /> Mua ngay<br />
                                     <span>Giao hàng tận nơi hoặc nhận tại cửa hàng</span>
                                 </button>
@@ -172,7 +297,7 @@ const ProductDetail = ({ ip, stocks, selectedSize, selectedColor, avaibleQuantit
                                 {/* <button className="themgiohang" onClick={handleClick} disabled={cartLoading}>
                                     {cartLoading ? "Đang thêm..." : "Thêm vào giỏ hàng"}
                                 </button> */}
-                                <button className="mua-tra-gop">MUA TRẢ GÓP</button >
+                                <button className="mua-tra-gop">Mua trả góp</button >
                             </div>
 
                         </div>

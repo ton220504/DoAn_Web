@@ -46,3 +46,15 @@
     }
 
 }
+
+.item-cart-deal {
+    transition: transform 0.3s ease; /* Thay đổi kiểu dáng mượt mà */
+    
+}
+
+/* Khi hover vào sản phẩm, mờ đi */
+.item-cart-deal:hover {
+    
+    transform: scale(1.05); /* Làm lớn lên một chút */
+    
+}

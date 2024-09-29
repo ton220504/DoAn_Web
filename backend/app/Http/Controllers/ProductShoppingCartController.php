@@ -33,56 +33,132 @@ class ProductShoppingCartController extends Controller
     }
 
 
+    // public function store(Request $request)
+    // {
+
+    //     $user = JWTAuth::parseToken()->authenticate();
+
+    //     if ($request->localCartList) {
+
+    //         $cartList = json_decode($request->localCartList, true);
+
+    //         foreach ($cartList as $cartArrayList) {
+    //             foreach ($cartArrayList as $cartItem) {
+
+    //                 $item = $user->cartItems()
+    //                     ->where('stock_id', $cartItem['stock_id'])
+    //                     ->first();
+
+    //                 if (!$item) {
+    //                     ShoppingCart::create([
+    //                         'user_id' => $user->id,
+    //                         'stock_id' => $cartItem['stock_id'],
+    //                         'quantity' => $cartItem['quantity']
+    //                     ]);
+    //                 }
+    //             }
+    //         }
+    //     } else {
+
+    //         $item = $user->cartItems()
+    //             ->where('stock_id', $request->stockId)
+    //             ->first();
+
+    //         if (!$item) {
+    //             ShoppingCart::create([
+    //                 'user_id' => $user->id,
+    //                 'stock_id' => $request->stockId,
+    //                 'quantity' => $request->quantity
+    //             ]);
+    //         } else {
+    //             $stock = Stock::findOrFail($request->stockId);
+
+    //             if (($item->quantity + $request->quantity) <= $stock->quantity)
+    //                 $item->increment('quantity', $request->quantity);
+    //             else {
+    //                 $item->update(['quantity' => $stock->quantity]);
+    //             }
+    //         }
+
+    //         return $user->cartItems()->count();
+    //     }
+    // }
     public function store(Request $request)
     {
-
         $user = JWTAuth::parseToken()->authenticate();
 
+        // Kiểm tra nếu có danh sách giỏ hàng từ phía client
         if ($request->localCartList) {
-
             $cartList = json_decode($request->localCartList, true);
 
             foreach ($cartList as $cartArrayList) {
                 foreach ($cartArrayList as $cartItem) {
-
+                    // Kiểm tra sản phẩm đã tồn tại trong giỏ hàng
                     $item = $user->cartItems()
                         ->where('stock_id', $cartItem['stock_id'])
+                        ->where('photo', $cartItem['photo']) // Kiểm tra hình ảnh
                         ->first();
 
+                    // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
                     if (!$item) {
                         ShoppingCart::create([
                             'user_id' => $user->id,
                             'stock_id' => $cartItem['stock_id'],
-                            'quantity' => $cartItem['quantity']
+                            'quantity' => $cartItem['quantity'],
+                            'name' => $cartItem['name'], // Thêm tên sản phẩm
+                            'price' => $cartItem['price'], // Thêm giá sản phẩm
+                            'photo' => $cartItem['photo'] // Thêm URL hình ảnh sản phẩm
                         ]);
+                    } else {
+                        // Nếu đã có trong giỏ hàng với hình ảnh giống, cập nhật số lượng
+                        $item->increment('quantity', $cartItem['quantity']);
                     }
                 }
             }
         } else {
-
+            // Nếu không có danh sách giỏ hàng, thêm sản phẩm một cách đơn lẻ
             $item = $user->cartItems()
                 ->where('stock_id', $request->stockId)
+                ->where('photo', $request->photo) // Kiểm tra hình ảnh
                 ->first();
 
+            // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
             if (!$item) {
                 ShoppingCart::create([
                     'user_id' => $user->id,
                     'stock_id' => $request->stockId,
-                    'quantity' => $request->quantity
+                    'quantity' => $request->quantity,
+                    'name' => $request->name, // Thêm tên sản phẩm
+                    'price' => $request->price, // Thêm giá sản phẩm
+                    'photo' => $request->photo // Thêm URL hình ảnh sản phẩm
                 ]);
             } else {
-                $stock = Stock::findOrFail($request->stockId);
-
-                if (($item->quantity + $request->quantity) <= $stock->quantity)
-                    $item->increment('quantity', $request->quantity);
-                else {
-                    $item->update(['quantity' => $stock->quantity]);
+                // Nếu sản phẩm đã có nhưng hình ảnh khác, tạo bản ghi mới
+                if ($item->photo !== $request->photo) {
+                    ShoppingCart::create([
+                        'user_id' => $user->id,
+                        'stock_id' => $request->stockId,
+                        'quantity' => $request->quantity,
+                        'name' => $request->name, // Thêm tên sản phẩm
+                        'price' => $request->price, // Thêm giá sản phẩm
+                        'photo' => $request->photo // Thêm URL hình ảnh sản phẩm
+                    ]);
+                } else {
+                    // Nếu sản phẩm đã có và hình ảnh giống nhau, cập nhật số lượng
+                    $stock = Stock::findOrFail($request->stockId);
+                    if (($item->quantity + $request->quantity) <= $stock->quantity) {
+                        $item->increment('quantity', $request->quantity);
+                    } else {
+                        $item->update(['quantity' => $stock->quantity]);
+                    }
                 }
             }
 
-            return $user->cartItems()->count();
+            return $user->cartItems()->count(); // Trả về số lượng sản phẩm trong giỏ hàng
         }
     }
+
+
 
     public function guestCart(Request $request)
     {

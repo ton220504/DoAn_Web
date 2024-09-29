@@ -3,14 +3,17 @@ import { LuPhoneCall } from "react-icons/lu";
 import { HiOutlineBuildingStorefront } from "react-icons/hi2";
 import { CiSearch } from "react-icons/ci";
 import ContentHeader from "./ContentHeader";
+import { Link } from "react-router-dom";
 
 const Header = () => (
     <>
         <div className="Top-header container ">
             <div className="row">
                 <div className="col-xl-2 col-lg-2 col-md-12 col-sm-12 col-xs-12 col-12 header-logo">
-                    <img className="img-header"
-                        src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/logo.png?1719291840576" />
+                    <Link to={"/"}>
+                        <img className="img-header"
+                            src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/logo.png?1719291840576" />
+                    </Link>
                 </div>
                 <div className="col-xl-7 col-lg-6 col-md-12 col-sm-12 col-xs-12 col-12">
                     <div className="search ">

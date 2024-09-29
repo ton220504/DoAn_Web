@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('user_id')->unsigned()->index();
             $table->integer('stock_id')->unsigned()->index();
             $table->integer('quantity');
+
             $table->timestamps();
         });
     }
