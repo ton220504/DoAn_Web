@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Card, Table, Toast } from 'react-bootstrap';
+import { Button, Card, Table } from 'react-bootstrap';
 import ComeBack from "../../Components/ComeBack";
-import { toast } from 'react-toastify';
 import ProductWishListDetail from './ProductWishListDetail';
 import numeral from 'numeral';
 import { Link, Navigate } from 'react-router-dom';
 import "../../scss/Cart.scss";
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
 
 const WishList = () => {
     const [product, setProduct] = useState([]);
@@ -69,8 +70,8 @@ const WishList = () => {
         try {
             await axios.delete(`http://127.0.0.1:8000/api/product/wishlist/${productId}`);
             setProduct(product.filter(item => item.id !== productId));
-            // Toast.success("Xóa sản phẩm thành công");
-            window.location.reload(); // Tải lại trang
+            toast.success("Xóa sản phẩm thành công");
+            //window.location.reload(); // Tải lại trang
 
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm:", error);
@@ -113,6 +114,7 @@ const WishList = () => {
     return (
         <>
             <ComeBack />
+            <ToastContainer/>
             <div className="mynocart container mt-2">
                 <h5 className="title-cart" style={{color:"red", fontSize:"20px", fontWeight:"bolder",fontStyle:"italic", paddingTop:"10px", paddingBottom:"10px"}}>Sản phẩm yêu thích</h5>
             </div>

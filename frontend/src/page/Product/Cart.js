@@ -5,7 +5,7 @@ import ComeBack from "../../Components/ComeBack";
 import { toast } from 'react-toastify';
 
 import numeral from 'numeral';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import "../../scss/Cart.scss";
 
 const Cart = () => {
@@ -14,6 +14,12 @@ const Cart = () => {
     const [loadingCart, setLoadingCart] = useState(true);
     const [loadingUser, setLoadingUser] = useState(true);
     const [user, setUser] = useState(null);
+
+    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
+
+    const navigate = useNavigate();
+
 
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
@@ -78,12 +84,38 @@ const Cart = () => {
 
     const thanhtien = (price, quantity) => price * quantity;
 
+    // const tinhTongTien = () => {
+    //     return product.reduce((total, item) => {
+    //         const price = item.price || 0;
+    //         return total + thanhtien(price, item.quantity);
+    //     }, 0);
+    // };
+
     const tinhTongTien = () => {
-        return product.reduce((total, item) => {
-            const price = item.price || 0;
-            return total + thanhtien(price, item.quantity);
-        }, 0);
+        return product
+            .filter(item => selectedProducts.includes(item.id))
+            .reduce((total, item) => total + thanhtien(item.price, item.quantity), 0);
     };
+
+    // Xử lý sự kiện khi nhấn "Thanh toán"
+    const handleCheckout = () => {
+        // Lấy các sản phẩm đã chọn và bao gồm thông tin ảnh
+        const selectedItems = product
+            .filter(item => selectedProducts.includes(item.id))
+            .map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                photo: item.photo,  // Thêm ảnh sản phẩm
+            }));
+
+        const totalAmount = tinhTongTien();
+
+        // Điều hướng đến trang Pay.js và truyền dữ liệu qua state
+        navigate('/thanh-toan', { state: { selectedItems, totalAmount } });
+    };
+
 
     const updateProductQuantity = async (productId, newQuantity) => {
         try {
@@ -118,6 +150,50 @@ const Cart = () => {
     useEffect(() => {
         checkUserLogin();
     }, []);
+
+    // Lấy trạng thái từ localStorage khi component được render lần đầu và product đã có dữ liệu
+    useEffect(() => {
+        if (product.length > 0) {
+            const storedSelectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+
+            // Lọc những sản phẩm có trong localStorage nhưng cũng tồn tại trong product
+            const validSelectedProducts = storedSelectedProducts.filter((id) =>
+                product.some((item) => item.id === id)
+            );
+
+            setSelectedProducts(validSelectedProducts);
+            setSelectAll(validSelectedProducts.length === product.length);
+        }
+    }, [product]); // Chỉ chạy khi `product` đã có dữ liệu
+
+    // Cập nhật trạng thái selectedProducts vào localStorage khi thay đổi
+    useEffect(() => {
+        if (selectedProducts.length > 0) {
+            localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+        }
+    }, [selectedProducts]);
+
+    // Xử lý chọn tất cả
+    const handleSelectAll = () => {
+        setSelectAll(!selectAll);
+        if (!selectAll) {
+            // Nếu chọn tất cả, thì tất cả các sản phẩm sẽ vào danh sách selectedProducts
+            const allProductIds = product.map(item => item.id);
+            setSelectedProducts(allProductIds);
+        } else {
+            // Nếu bỏ chọn tất cả, thì clear danh sách selectedProducts
+            setSelectedProducts([]);
+        }
+    };
+
+    // Xử lý chọn từng sản phẩm
+    const handleSelectProduct = (id) => {
+        if (selectedProducts.includes(id)) {
+            setSelectedProducts(selectedProducts.filter(itemId => itemId !== id));
+        } else {
+            setSelectedProducts([...selectedProducts, id]);
+        }
+    };
 
     if (loadingUser) {
         return (
@@ -155,7 +231,7 @@ const Cart = () => {
         <>
             <ComeBack />
             <div className="mynocart container mt-2">
-            <h5 className="title-cart" style={{color:"red", fontSize:"20px", fontWeight:"bolder",fontStyle:"italic", paddingTop:"10px", paddingBottom:"10px"}}>Giỏ hàng của bạn</h5>
+                <h5 className="title-cart" style={{ color: "red", fontSize: "20px", fontWeight: "bolder", fontStyle: "italic", paddingTop: "10px", paddingBottom: "10px" }}>Giỏ hàng của bạn</h5>
             </div>
             {product.length === 0 ? (
                 <div className="content-nocart container text-center mt-5" style={{ height: "200px" }}>
@@ -169,6 +245,13 @@ const Cart = () => {
                     <Table striped bordered hover className="container">
                         <thead>
                             <tr>
+                                <th>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectAll}
+                                        onChange={handleSelectAll}
+                                    /> Chọn tất cả
+                                </th>
                                 <th>Thông tin sản phẩm</th>
                                 <th>Đơn giá</th>
                                 <th>Số lượng</th>
@@ -179,8 +262,14 @@ const Cart = () => {
                             {product.map((item, index) => (
                                 <tr key={index}>
                                     <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedProducts.includes(item.id)}
+                                            onChange={() => handleSelectProduct(item.id)}
+                                        />
+                                    </td>
+                                    <td>
                                         <div className="product-detail">
-                                            {/* <ProductCartDetail id={item.stock_id} onPriceChange={(price) => handlePriceChange(item.stock_id, price)} className="ProductCartDetail" /> */}
                                             <div className="col-md-3 product-img">
                                                 <Link to={`/chi-tiet-san-pham/${item.stock_id}`}>
                                                     <img
@@ -192,7 +281,6 @@ const Cart = () => {
                                                 </Link>
                                             </div>
                                             <div style={{ fontWeight: "bold" }}>{item.name}</div>
-
                                         </div>
                                         <span style={{ color: "red", cursor: "pointer" }} onClick={() => handleDeleteProduct(item.id)}>Xóa</span>
                                     </td>
@@ -208,11 +296,13 @@ const Cart = () => {
                         </tbody>
                     </Table>
                     <div className="container mt-3 d-flex justify-content-between align-items-center">
-                        <h5 style={{ margin: 0 }}>Tổng tiền:</h5>
-                        <p style={{ color: "red", fontWeight: "bold" }}>{formatCurrency(tinhTongTien())}</p>
-                        <Link to="/thanh-toan">
-                            <Button variant="primary">Thanh toán</Button>
-                        </Link>
+                        <h5 style={{ margin: 0 }}>
+                            Tổng tiền:
+                            <p style={{ color: "red", fontWeight: "bold" }}>
+                                {formatCurrency(tinhTongTien())}
+                            </p>
+                        </h5>
+                        <Button variant="primary" onClick={handleCheckout}>Thanh toán</Button>
                     </div>
                 </div>
             )}

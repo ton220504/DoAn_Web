@@ -7,6 +7,8 @@ import HotDeals from "./HotDeals";
 import numeral from 'numeral';
 import '../../assets/css/Deal.css'; // Đảm bảo rằng đường dẫn đến file CSS là chính xác
 import Swal from "sweetalert2";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -48,19 +50,11 @@ const Deal = () => {
 
             if (response.status === 200) {
                 setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đã thêm vào danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                });
+                toast.success("Đã thêm vào danh sách yêu thích!")
             }
         } catch (error) {
             if (error.response && error.response.status === 405) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sản phẩm đã có trong danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                });
+                toast.warning("Sản phẩm đã thêm vào danh sách yêu thích!")
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -112,6 +106,7 @@ const Deal = () => {
 
     return (
         <div className="my-deal container p-3 mt-3">
+            <ToastContainer/>
             <section className="content container">
                 <div className="box-deal">
                     <div className="set-time col-4">

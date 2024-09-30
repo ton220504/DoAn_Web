@@ -16,11 +16,12 @@ import Layoutbackend from './layout/BE/layout';
 import Approuter from './router';
 import WishList from './page/Product/WishList';
 
+
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
 function App() {
   return (
 
-
+    
     <BrowserRouter>
       <Routes>
         {/* <Route path="/admin/*" element={<Layoutbackend />}>
@@ -52,6 +53,7 @@ function App() {
         <Route path="thanh-toan" element={<Pay />} />
       </Routes>
     </BrowserRouter>
+    
   );
 }
 

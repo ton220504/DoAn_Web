@@ -189,6 +189,7 @@ const ProductDetail = () => {
                 icon: 'error',
                 title: 'Sản phẩm đã thêm vào giỏ hàng!',
             });
+           
         }
     };
     

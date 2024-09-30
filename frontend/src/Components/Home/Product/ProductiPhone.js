@@ -5,14 +5,18 @@ import numeral from 'numeral';
 import axios from "axios";
 import Swal from "sweetalert2";
 import '../../../scss/Accessory.scss'
-//import { ToastContainer, toast } from 'react-toastify';
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 
 const ProductiPhone = () => {
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [favoriteProducts, setFavoriteProducts] = useState([]); // Lưu trữ danh sách sản phẩm yêu thích
-
+    
     const formatCurrency = (value) => {
         return numeral(value).format('0,0') + ' ₫';
     };
@@ -43,23 +47,14 @@ const ProductiPhone = () => {
 
             if (response.status === 200) {
                 setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đã thêm vào danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    
-                    window.location.reload();
-                });
+                //setWishListItemCount((prevCount) => prevCount + 1);
+                toast.success("Đã thêm vào danh sách yêu thích!")
                 
             }
         } catch (error) {
             if (error.response && error.response.status === 405) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sản phẩm đã có trong danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                });
+                
+                toast.warning("Sản phẩm đã thêm vào danh sách yêu thích!")
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -109,7 +104,7 @@ const ProductiPhone = () => {
     return (
         <div className="accessory mt-5">
             <section className="content container">
-                
+                <ToastContainer/>
                 <div className="title-index">
                     <Link className="name-title">
                         <span className="phukien-link">iPhone</span>Nổi bật

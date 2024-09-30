@@ -4,7 +4,12 @@ import { FaUser, FaShoppingCart, FaHeart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
 const ContentHeader = () => {
+
+    
+
+
     const [menu, setMenu] = useState([
         { id: 1, name: "iPhone 15" },
         { id: 2, name: "Xiaomi" },
@@ -116,6 +121,7 @@ const ContentHeader = () => {
         setCartItemCount(cartList.length);
 
     };
+    
 
     return (
         <div className="content-header">
@@ -249,6 +255,7 @@ const ContentHeader = () => {
                                     )}
                                 </Link>
                             </div>
+                            
                         </div>
                     </div>
                 </div>

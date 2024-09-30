@@ -14,6 +14,9 @@ import Pagination from "react-js-pagination";
 import Swal from "sweetalert2";
 import axios from "axios";
 
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const ProductByCategory = () => {
     const [products, setProducts] = useState([]);
@@ -56,19 +59,11 @@ const ProductByCategory = () => {
 
             if (response.status === 200) {
                 setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đã thêm vào danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                });
+                toast.success("Đã thêm vào danh sách yêu thích!")
             }
         } catch (error) {
             if (error.response && error.response.status === 405) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sản phẩm đã có trong danh sách yêu thích!',
-                    confirmButtonText: 'OK'
-                });
+                toast.warning("Sản phẩm đã thêm vào danh sách yêu thích!")
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -119,6 +114,7 @@ const ProductByCategory = () => {
         <>
             <ComeBack />
             <div className="AllProduct mt-5">
+                <ToastContainer/>
                 <section className="content container">
                     <div className="title-index">
                         <Link className="name-title">
