@@ -40,6 +40,11 @@ class ProductController extends Controller
         return Product::with("category", "stocks")->paginate(20);
     }
 
+    public function showAllSearch()
+    {
+        return Product::with("category", "stocks")->get();
+    }
+
 
 
 

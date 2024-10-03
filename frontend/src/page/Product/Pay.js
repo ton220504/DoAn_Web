@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import "../../scss/Cart.scss"
 import { SiCashapp } from "react-icons/si";
-import { Button, Table } from "react-bootstrap";
+import { Button, Table, Form } from "react-bootstrap";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const Pay = () => {
 
@@ -13,23 +14,159 @@ const Pay = () => {
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
 
-    const [selectedProvince, setSelectedProvince] = useState('');
-    const [selectedDistrict, setSelectedDistrict] = useState('');
+
+    const [selectedProvince, setSelectedProvince] = useState("");
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [selectedWard, setSelectedWard] = useState("");
+    const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState(""); // Lưu thông báo lỗi từ server
+    //clearCart
+    const [product, setProduct] = useState([])
 
 
+    //abate
+    const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [email, setEmail] = useState("");
+    const [products, setProducts] = useState([]);
+    const [totalMoney, setTotalMoney] = useState(0);
+    const [province, setProvince] = useState([]);
+    const [district, setDistrict] = useState([]);
+    const [ward, setWard] = useState([]);
+    //const [commune, setCommune] = useState([]);
+    const [address, setAddress] = useState("");
+    //const [totalAmount, setTotalAmount] = useState(0);
+    const fee = 40000; // Đặt phí cố định
+
+
+    function handleChange(e) {
+        const { name, value } = e.target;
+
+        switch (name) {
+            case "name":
+                setName(value);
+                break;
+            case "phone":
+                setPhone(value);
+                break;
+            case "email":
+                setEmail(value);
+                break;
+            case "totalMoney":
+                setTotalMoney(value);
+                break;
+            case "provinces":
+                setProvince(value);
+                break;
+            case "district":
+                setDistrict(value);
+                break;
+            case "wards":
+                setWard(value);
+                break;
+            case "address":
+                setAddress(value);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        const userId = localStorage.getItem('userId');
+    
+        // Tạo mảng products từ selectedItems
+        const products = selectedItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price * item.quantity,
+        }));
+    
+        // Log dữ liệu trước khi gửi để kiểm tra
+        console.log({
+            name: name,
+            phone: phone,
+            email: email,
+            products: products,
+            totalMoney: totalMoney,
+            provinces: province,
+            district: district,
+            wards: ward,
+            address: address
+        });
+    
+        // Gửi yêu cầu POST để tạo đơn hàng
+        axios.post("http://127.0.0.1:8000/api/abate", {
+            name: name,
+            phone: phone,
+            email: email,
+            products: products, // Chuyển mảng products thành JSON
+            totalMoney: totalMoney,
+            provinces: province,
+            district: district,
+            wards: ward,
+            address: address
+        })
+            .then((result) => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đặt hàng thành công',
+                }).then(() => {
+                    navigate("/");
+                });
+            })
+            .catch((err) => {
+                // setLoading(false);
+                if (err.response && err.response.status === 422) {
+                    console.error("Lỗi 422: Dữ liệu không hợp lệ", err.response.data); // Kiểm tra lỗi cụ thể từ server
+                    setErrorMessage("Lỗi 422: Dữ liệu không hợp lệ");
+                } else {
+                    setErrorMessage("Lỗi không đặt hàng thành công");
+                }
+            });
+    }
+    
     
 
-    const fee = 40000;
+    
+    
+
+
+
+    //const fee = 40000;
     const isShowComplete = () => {
         return selectedProvince !== ''; // Kiểm tra xem có tỉnh nào được chọn hay không
     };
 
-   
+
 
 
 
     const location = useLocation();
     const { selectedItems, totalAmount } = location.state || { selectedItems: [], totalAmount: 0 };
+    //const { selectedItems } = location.state || { selectedItems: [] };
+
+
+    // Hàm để tính tổng số tiền
+    const calculateTotalAmount = () => {
+        const total = products.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+        //setTotalAmount(total);
+    };
+
+    // Sử dụng useEffect để tự động tính tổng số tiền khi sản phẩm thay đổi
+    useEffect(() => {
+        calculateTotalAmount(); // Tính toán lại totalAmount
+    }, [products]);
+
+    // Sử dụng useEffect để tính tổng tiền
+    useEffect(() => {
+        setTotalMoney(totalAmount + fee); // Cập nhật totalMoney
+    }, [totalAmount, fee]);
+
+
 
     const formatCurrency = (value) => value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -54,6 +191,7 @@ const Pay = () => {
                 try {
                     const response = await axios.get(`https://esgoo.net/api-tinhthanh/2/${selectedProvince}.htm`);
                     setDistricts(response.data.data);
+
                 } catch (error) {
                     console.error('Error fetching districts:', error);
                 }
@@ -82,213 +220,257 @@ const Pay = () => {
 
     return (
         <>
-            <div className="Pay container">
-
-
-
-                <div className=" row">
-                    <div className="col-8">
-                        <div className="main-header">
-                            <img className="logo" style={{ width: "300px", paddingTop: "10px", display: "block", margin: "0 auto" }} src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/checkout_logo.png?1726452627090" />
-                        </div>
-                        <div className="row">
-                            <div className="col-6">
-                                <div className=" my-3">
-                                    <b>Thông tin người nhận</b>
-
-                                </div>
-                                <div className="mb-3">
-                                    <input type="email" name="email" className="form-control"
-
-                                        placeholder="Nhập email" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="name" name="name" className="form-control"
-
-                                        placeholder="Nhập Họ Tên" />
-                                </div>
-                                <div className="mb-3">
-                                    <input type="phone" name="phone" className="form-control"
-
-                                        placeholder="Số điện thoại" />
-                                </div>
-                                {/* <div className="mb-3">
-                                    <input type="address" name="address" className="form-control"
-
-                                        placeholder="Địa chỉ(Tùy chọn)" />
-                                </div> */}
-                                <div className="mb-3">
-                                    <select
-                                        className="form-control"
-                                        placeholder="Tỉnh, Thành phố"
-                                        onChange={(e) => setSelectedProvince(e.target.value)}
-                                    >
-                                        <option value="">Chọn Tỉnh, Thành phố</option>
-                                        {provinces.map((province) => (
-                                            <option key={province.id} value={province.id}>{province.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="mb-3">
-                                    <select
-                                        className="form-control"
-                                        placeholder="Quận, huyện"
-                                        onChange={(e) => setSelectedDistrict(e.target.value)}
-                                    >
-                                        <option value="">Chọn Quận, Huyện</option>
-                                        {districts.map((district) => (
-                                            <option key={district.id} value={district.id}>{district.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="mb-3">
-                                    <select className="form-control" placeholder="Phường, xã">
-                                        <option value="">Chọn Phường, Xã</option>
-                                        {wards.map((ward) => (
-                                            <option key={ward.id} value={ward.id}>{ward.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="mb-3">
-                                    <textarea rows="4" className="form-control" placeholder="Nhập địa chỉ cần giao..." />
-                                </div>
+            <Form className="abate" onSubmit={handleSubmit}>
+                <div className="Pay container">
+                    <div className=" row">
+                        <div className="col-8">
+                            <div className="main-header">
+                                <img className="logo" style={{ width: "300px", paddingTop: "10px", display: "block", margin: "0 auto" }} src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/checkout_logo.png?1726452627090" />
                             </div>
-                            <div className="col-6">
-                                <div className=" my-3">
-                                    <b>Vận chuyển</b>
-                                </div>
-                                {isShowComplete() ?
-                                    (
-                                        <div className="ship-cod form-control">
-                                            <div className="ship">
-                                                <input type="radio" checked readOnly />
-                                                Giao hàng tận nơi
-                                            </div>
-                                            <span className="cod">{formatCurrency(fee)}</span>
-                                        </div>
-                                    )
-                                    :
-                                    (
-                                        <span className="null form-control">Vui lòng nhập thông tin giao hàng</span>
-                                    )
-                                }
-                                <div className=" my-3">
-                                    <b>Thanh toán</b>
-                                </div>
-                                <div className="method ">
-                                    <div className="method-cash form-control">
-                                        <div className="cash">
-                                            <input type="radio" id="cash" name="fav_language" />
-                                            <label >Tiền mặt</label>
-                                        </div>
-                                        <span className="icon">
-                                            <SiCashapp />
-                                        </span>
+                            <div className="row">
+                                <div className="col-6">
+                                    <div className=" my-3">
+                                        <b>Thông tin người nhận</b>
+
                                     </div>
-                                    <div className="method-transfer mt-2 form-control">
-                                        <div className="transfer">
-                                            <input type="radio" id="transfer" name="fav_language" />
-                                            <p >Chuyển khoản</p>
-                                        </div>
-                                        <span className="icon">
-                                            <SiCashapp />
-                                        </span>
+                                    <div className="mb-3">
+                                        <input type="email" name="email" className="form-control" onChange={handleChange}
+
+                                            placeholder="Nhập email" />
+                                    </div>
+                                    <div className="mb-3">
+                                        <input type="name" name="name" className="form-control" onChange={handleChange}
+
+                                            placeholder="Nhập Họ Tên" />
+                                    </div>
+                                    <div className="mb-3">
+                                        <input type="phone" name="phone" className="form-control" onChange={handleChange}
+
+                                            placeholder="Số điện thoại" />
                                     </div>
 
-
-                                </div>
-
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <div className="col-4  " style={{ height: "730px", width: "400px", borderLeft: "3px solid lightgray" }} >
-                        <div className="order container">
-
-                            <div className="container">
-                                <p style={{ fontSize: "20px", fontWeight: "bold", marginTop: "10px", textAlign: "center" }}>Thông tin thanh toán</p>
-                                <div className="order-summary">
-                                    <p>Sản phẩm đã chọn:</p>
-                                    {selectedItems.length === 0 ? (
-                                        <p>Không có sản phẩm nào được chọn.</p>
-                                    ) : (
-                                        <ul>
-                                            {selectedItems.map((item, index) => (
-                                                <>
-                                                    <hr />
-                                                    <li key={item.id} className="d-flex justify-content-between align-items-center">
-                                                        <div className="d-flex align-items-center">
-                                                            {/* Hiển thị hình ảnh sản phẩm */}
-                                                            <img
-                                                                src={`../../../img/${item.photo}`}
-                                                                alt={item.name}
-                                                                style={{ width: '70px', height: '70px', marginRight: '10px' }}
-                                                            />
-                                                            <div>
-                                                                <span style={{ fontWeight: "bold", width: "200px" }}>{item.name}</span><br />
-                                                                <span style={{ fontWeight: "lighter", fontStyle: "italic" }}>Số lượng: {item.quantity}</span><br />
-
-                                                            </div>
-
-
-                                                        </div>
-                                                        <span style={{ fontWeight: "lighter", fontStyle: "italic" }}>{formatCurrency(item.price * item.quantity)}</span>
-                                                    </li>
-
-                                                </>
-
+                                    <div className="mb-3">
+                                        <select
+                                            className="form-control"
+                                            value={selectedProvince}
+                                            onChange={(e) => {
+                                                const selectedId = e.target.value; // Lấy ID đã chọn
+                                                setSelectedProvince(selectedId); // Cập nhật giá trị đã chọn
+                                                // Tìm tên tỉnh tương ứng với ID đã chọn
+                                                const selectedProvinceObj = provinces.find(prov => prov.id === selectedId);
+                                                if (selectedProvinceObj) {
+                                                    setProvince(selectedProvinceObj.name); // Lưu tên tỉnh
+                                                } else {
+                                                    setProvince(""); // Nếu không tìm thấy, đặt lại giá trị
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Chọn Tỉnh, Thành phố</option>
+                                            {provinces.map((province) => (
+                                                <option key={province.id} value={province.id}>{province.name}</option>
                                             ))}
-                                        </ul>
-                                    )}
-                                    <hr />
-                                    <div className="d-flex justify-content-between">
-                                        <p>Tạm tính: </p>
-                                        <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>{formatCurrency(totalAmount)}</strong>
+                                        </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <select
+                                            className="form-control"
+                                            value={selectedDistrict}
+                                            //onChange={(e) => setSelectedDistrict(e.target.value)}
+                                            onChange={(e) => {
+                                                const selectedId = e.target.value; // Lấy ID đã chọn
+                                                setSelectedDistrict(selectedId); // Cập nhật giá trị đã chọn
+                                                // Tìm tên tỉnh tương ứng với ID đã chọn
+                                                const selectedDistrictObj = districts.find(prov => prov.id === selectedId);
+                                                if (selectedDistrictObj) {
+                                                    setDistrict(selectedDistrictObj.name); // Lưu tên tỉnh
+                                                } else {
+                                                    setDistrict(""); // Nếu không tìm thấy, đặt lại giá trị
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Chọn Quận, Huyện</option>
+                                            {districts.map((district) => (
+                                                <option key={district.id} value={district.id}>{district.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className="mb-3">
+                                        <select
+                                            className="form-control"
+                                            value={selectedWard}
+                                            onChange={(e) => {
+                                                const selectedId = e.target.value; // Lấy ID đã chọn
+                                                setSelectedWard(selectedId); // Cập nhật giá trị đã chọn
+                                                // Tìm tên phường xã tương ứng với ID đã chọn
+                                                const selectedWardObj = wards.find(ward => ward.id === selectedId);
+                                                if (selectedWardObj) {
+                                                    setWard(selectedWardObj.name); // Lưu tên phường/xã
+                                                } else {
+                                                    setWard(""); // Nếu không tìm thấy, đặt lại giá trị
+                                                }
+                                            }}
+                                        >
+                                            <option value="">Chọn Phường, Xã</option>
+                                            {wards.map((ward) => (
+                                                <option key={ward.id} value={ward.id}>{ward.name}</option>
+                                            ))}
+                                        </select>
 
 
                                     </div>
-                                    <div className="d-flex justify-content-between">
-                                        <p>Phí vận chuyển: </p>
-                                        <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
-                                            {isShowComplete() ?
-                                                (
-                                                    <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>{formatCurrency(fee)}</strong>
-                                                )
-                                                :
-                                                (
-                                                    <span>---</span>
-                                                )
-                                            }
-                                        </strong>
+
+                                    <div className="mb-3">
+                                        <textarea rows="4" name="address" onChange={handleChange} className="form-control" placeholder="Nhập địa chỉ cần giao..." />
                                     </div>
-                                    <hr />
-                                    <div className="d-flex justify-content-between">
-                                        <strong style={{ fontSize: "25px", fontWeight: "bold" }}>Tổng tiền:</strong>
-                                        <strong style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}>
-                                            {
-                                                isShowComplete() ?
-                                                (
-                                                    <p>{formatCurrency(totalAmount+fee)}</p>
-                                                ):(
-                                                    <p>{formatCurrency(totalAmount)}</p>
-                                                )
-                                            }
-                                        </strong>
+                                </div>
+                                <div className="col-6">
+                                    <div className=" my-3">
+                                        <b>Vận chuyển</b>
+                                    </div>
+                                    {isShowComplete() ?
+                                        (
+                                            <div className="ship-cod form-control">
+                                                <div className="ship">
+                                                    <input type="radio" checked readOnly />
+                                                    Giao hàng tận nơi
+                                                </div>
+                                                <span className="cod">{formatCurrency(fee)}</span>
+                                            </div>
+                                        )
+                                        :
+                                        (
+                                            <span className="null form-control">Vui lòng nhập thông tin giao hàng</span>
+                                        )
+                                    }
+                                    <div className=" my-3">
+                                        <b>Thanh toán</b>
+                                    </div>
+                                    <div className="method ">
+                                        <div className="method-cash form-control">
+                                            <div className="cash">
+                                                <input type="radio" id="cash" name="fav_language" />
+                                                <label >Tiền mặt</label>
+                                            </div>
+                                            <span className="icon">
+                                                <SiCashapp />
+                                            </span>
+                                        </div>
+                                        <div className="method-transfer mt-2 form-control">
+                                            <div className="transfer">
+                                                <input type="radio" id="transfer" name="fav_language" />
+                                                <p >Chuyển khoản</p>
+                                            </div>
+                                            <span className="icon">
+                                                <SiCashapp />
+                                            </span>
+                                        </div>
+
 
                                     </div>
-                                    <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán</button>
 
                                 </div>
                             </div>
+
+
                         </div>
+                        <div className="col-4  " style={{ height: "730px", width: "400px", borderLeft: "3px solid lightgray" }} >
+                            <div className="order container">
+
+                                <div className="container">
+                                    <p style={{ fontSize: "20px", fontWeight: "bold", marginTop: "10px", textAlign: "center" }}>Thông tin thanh toán</p>
+                                    <div className="order-summary">
+                                        <p>Sản phẩm đã chọn:</p>
+                                        {selectedItems.length === 0 ? (
+                                            <p>Không có sản phẩm nào được chọn.</p>
+                                        ) : (
+                                            <ul>
+                                                {selectedItems.map((item, index) => (
+                                                    <React.Fragment key={`${item.id}-${index}`}>
+                                                        <hr />
+                                                        <li className="d-flex justify-content-between align-items-center">
+                                                            <div className="d-flex align-items-center">
+                                                                {/* Hiển thị hình ảnh sản phẩm */}
+                                                                <img
+                                                                    src={`../../../img/${item.photo}`}
+                                                                    alt={item.name}
+                                                                    style={{ width: '70px', height: '70px', marginRight: '10px' }}
+                                                                />
+                                                                <div>
+                                                                    <span style={{ fontWeight: "bold", width: "200px" }}>{item.name}</span><br />
+                                                                    <span style={{ fontWeight: "lighter", fontStyle: "italic" }}>
+                                                                        Số lượng: {item.quantity}
+                                                                    </span><br />
+                                                                </div>
+                                                            </div>
+                                                            <span style={{ fontWeight: "lighter", fontStyle: "italic" }}>
+                                                                {formatCurrency(item.price * item.quantity)}
+                                                            </span>
+                                                        </li>
+                                                    </React.Fragment>
+                                                ))}
+                                            </ul>
+                                        )}
+                                        <hr />
+
+                                        <div className="d-flex justify-content-between">
+                                            <p>Tạm tính:</p>
+                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
+                                                {formatCurrency(totalAmount)} {/* Hiển thị tạm tính */}
+                                            </strong>
+                                        </div>
+                                        <div className="d-flex justify-content-between">
+                                            <p>Phí vận chuyển: </p>
+                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
+                                                {isShowComplete() ?
+                                                    (
+                                                        <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>{formatCurrency(fee)}</strong>
+                                                    )
+                                                    :
+                                                    (
+                                                        <span>---</span>
+                                                    )
+                                                }
+                                            </strong>
+                                        </div>
+                                        <hr />
+                                        {/* <div className="d-flex justify-content-between"
+
+                                        >
+                                            <strong style={{ fontSize: "25px", fontWeight: "bold" }}>Tổng tiền:</strong>
+                                            <strong style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
+                                                value={totalAmount}
+                                                onChange={(e) => setTotalMoney(e.target.value)} >
+                                                {
+                                                    isShowComplete() ?
+                                                        (
+                                                            <p >{formatCurrency(totalAmount + fee)}</p>
+                                                        ) : (
+                                                            <p>{formatCurrency(totalAmount)}</p>
+                                                        )
+                                                }
+                                            </strong>
+
+                                        </div> */}
+                                        <div className="d-flex justify-content-between">
+                                            <p>Tổng tiền:</p>
+                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
+                                                {formatCurrency(totalMoney)} {/* Hiển thị tổng tiền */}
+                                            </strong>
+                                        </div>
+                                        <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+
+
 
                 </div>
+            </Form>
 
-
-
-            </div>
         </>
 
     );

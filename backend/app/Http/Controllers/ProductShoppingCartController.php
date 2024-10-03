@@ -12,18 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ProductShoppingCartController extends Controller
 {
-    // public function index(Request $request)
-    // {
 
-    //     $user = JWTAuth::parseToken()->authenticate();
-
-    //     $cartList = $user->cartItems()
-    //         ->with('stock.product')
-    //         ->orderBy('id', 'desc')
-    //         ->get();
-
-    //     return $cartList;
-    // }
     public function index()
     {
         // return ShoppingCart::all();
@@ -32,57 +21,6 @@ class ProductShoppingCartController extends Controller
         return response()->json($cartItems);
     }
 
-
-    // public function store(Request $request)
-    // {
-
-    //     $user = JWTAuth::parseToken()->authenticate();
-
-    //     if ($request->localCartList) {
-
-    //         $cartList = json_decode($request->localCartList, true);
-
-    //         foreach ($cartList as $cartArrayList) {
-    //             foreach ($cartArrayList as $cartItem) {
-
-    //                 $item = $user->cartItems()
-    //                     ->where('stock_id', $cartItem['stock_id'])
-    //                     ->first();
-
-    //                 if (!$item) {
-    //                     ShoppingCart::create([
-    //                         'user_id' => $user->id,
-    //                         'stock_id' => $cartItem['stock_id'],
-    //                         'quantity' => $cartItem['quantity']
-    //                     ]);
-    //                 }
-    //             }
-    //         }
-    //     } else {
-
-    //         $item = $user->cartItems()
-    //             ->where('stock_id', $request->stockId)
-    //             ->first();
-
-    //         if (!$item) {
-    //             ShoppingCart::create([
-    //                 'user_id' => $user->id,
-    //                 'stock_id' => $request->stockId,
-    //                 'quantity' => $request->quantity
-    //             ]);
-    //         } else {
-    //             $stock = Stock::findOrFail($request->stockId);
-
-    //             if (($item->quantity + $request->quantity) <= $stock->quantity)
-    //                 $item->increment('quantity', $request->quantity);
-    //             else {
-    //                 $item->update(['quantity' => $stock->quantity]);
-    //             }
-    //         }
-
-    //         return $user->cartItems()->count();
-    //     }
-    // }
     public function store(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
@@ -198,17 +136,6 @@ class ProductShoppingCartController extends Controller
 
     public function destroy($id)
     {
-
-        // $user = JWTAuth::parseToken()->authenticate();
-
-        // if ($user) {
-        //     $cartItem = $user->cartItems()->findOrFail($id);
-
-        //     if ($cartItem)
-        //         $cartItem->delete();
-        // }
-
-        // return $cartItem;
         try {
             $cartItem = ShoppingCart::find($id);
 
@@ -224,19 +151,31 @@ class ProductShoppingCartController extends Controller
         }
     }
 
+     // Hàm xóa sản phẩm đã chọn trong giỏ hàng
+     public function clearSelected(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $cartIds = $request->input('cart_ids'); // Thay đổi từ stock_ids thành cart_ids
+
+        // Kiểm tra xem các sản phẩm có tồn tại trong giỏ hàng không
+        $cartItems = ShoppingCart::where('user_id', $userId)->whereIn('id', $cartIds)->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['error' => 'Item not found'], 404);
+        }
+
+        // Xóa các sản phẩm trong giỏ hàng
+        ShoppingCart::where('user_id', $userId)->whereIn('id', $cartIds)->delete();
+
+        return response()->json(['message' => 'Giỏ hàng đã được xóa thành công!'], 200);
+    }
+
+
 
     public function cartCount(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
         return $user->cartItems()->pluck('stock_id')->toArray();
-        // $cartItems = $request->session()->get('cartItems', []);
 
-        // // Thêm sản phẩm vào giỏ hàng (dùng $productId làm ví dụ)
-        // $cartItems[] = $productId;
-
-        // // Lưu lại giỏ hàng vào session
-        // $request->session()->put('cartItems', $cartItems);
-
-        // return response()->json(['message' => 'Sản phẩm đã được thêm vào giỏ hàng']);
     }
 }

@@ -51,14 +51,14 @@ const Register = (props) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Đăng ký thành công!',
-                }).then(()=>{
+                }).then(() => {
                     navigate("/login");
                 });
-                
+
                 setLoading(false);
 
                 // Chuyển hướng đến trang đăng nhập sau 2 giây
-                
+
             })
             .catch((err) => {
                 setLoading(false);

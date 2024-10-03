@@ -41,20 +41,26 @@ Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index');
 Route::get('/auth', 'App\Http\Controllers\UserController@getAuthenticatedUser');
 Route::post('/register', 'App\Http\Controllers\UserController@register');//6
 Route::post('/login', [UserController::class, 'login']);//7
+
+
 Route::get('/user/default-address', [AddressController::class, 'show']);
 Route::post('/user/create-user-address', [AddressController::class, 'createUser']);
 Route::post('/user/address', [AddressController::class, 'store']);
+Route::get('/users', 'App\Http\Controllers\UserController@show');//8
+
 Route::get('/products', 'App\Http\Controllers\ProductController@index');//8
 Route::get('/products/{id}', 'App\Http\Controllers\ProductController@show');//9
 Route::post('/products', 'App\Http\Controllers\ProductController@store');//10
 Route::delete('/products/{id}', 'App\Http\Controllers\ProductController@destroy');//1
 Route::put('/products/{id}', 'App\Http\Controllers\ProductController@update');//12
 Route::get('/product', 'App\Http\Controllers\ProductController@showAll');//show all product 13
+Route::get('/productSearch', 'App\Http\Controllers\ProductController@showAllSearch');//show all product 13
 
 
 Route::get('/product/category/{id}', [ProductCategoriesController::class, 'getProductsByCategory']);//show product by id //14
 Route::get('/product/category/paginate/{id}', [ProductCategoriesController::class, 'getProductsByCategoryPaginate']);//show product by category by id //15
-
+//abate
+Route::post('/abate', 'App\Http\Controllers\AbateController@store');
 
 
 Route::get('/product/hot-deal', [ProductDealsController::class, 'hotDeals']);
@@ -79,6 +85,9 @@ Route::delete('/product/cart-list/{id}', [ProductShoppingCartController::class, 
 Route::get('/product/cart-list', [ProductShoppingCartController::class, 'index']);//22
 Route::post('/product/cart-list', 'App\Http\Controllers\ProductShoppingCartController@store');//23
 Route::put('/product/cart-list/{id}', 'App\Http\Controllers\ProductShoppingCartController@update');//24
+Route::delete('/cart-list/clear-selected', [ProductShoppingCartController::class, 'clearSelected']);
+
+
 
 Route::get('/product/wishlist/count', 'App\Http\Controllers\ProductWishlistController@count');
 Route::get('/product/wishlist', 'App\Http\Controllers\ProductWishlistController@index');

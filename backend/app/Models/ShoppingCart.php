@@ -18,4 +18,10 @@ class ShoppingCart extends Model
         return $this->belongsTo('App\Models\Stock');
     }
 
+    // Định nghĩa mối quan hệ với sản phẩm
+    public function product()
+    {
+        return $this->belongsTo(product::class);
+    }
+
 }
