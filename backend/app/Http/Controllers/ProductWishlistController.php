@@ -31,6 +31,9 @@ class ProductWishlistController extends Controller
         }
         return [];
     }
+    public function getAll(){
+        return Wishlist::all();
+    }
 
     public function store(Request $request)
     {

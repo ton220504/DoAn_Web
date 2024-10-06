@@ -14,7 +14,7 @@ class AbateController extends Controller
     {
         // Validate dữ liệu đầu vào
         $request->validate([
-            'name' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
         'phone' => 'required|string|max:15',
         'email' => 'required|email|max:255',
         'products' => 'required|array',
@@ -48,6 +48,29 @@ class AbateController extends Controller
             return response()->json(['message' => 'Lỗi lưu đơn hàng', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function getAll()
+    {
+        return Abate::all();
+    }
+
+    public function getAbateById($id)
+    {
+        return Abate::find($id);
+    }
+
+    public function delete($id)
+    {
+        $abate = Abate::find($id);  // Tìm bản ghi với id
+        if ($abate) {
+            $abate->delete();  // Xóa bản ghi nếu tìm thấy
+            return response()->json(['message' => 'Xóa thành công!'], 200);
+        } else {
+            return response()->json(['message' => 'Bản ghi không tồn tại!'], 404);
+        }
+    }
+
+
 
 
 }

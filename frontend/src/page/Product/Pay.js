@@ -6,6 +6,7 @@ import { SiCashapp } from "react-icons/si";
 import { Button, Table, Form } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
+import confetti from 'canvas-confetti';
 
 const Pay = () => {
 
@@ -73,18 +74,20 @@ const Pay = () => {
     }
 
 
+
+
     function handleSubmit(e) {
         e.preventDefault();
-        const userId = localStorage.getItem('userId');
-    
+
         // Tạo mảng products từ selectedItems
         const products = selectedItems.map(item => ({
             id: item.id,
             name: item.name,
+            photo: item.photo,
             quantity: item.quantity,
             price: item.price * item.quantity,
         }));
-    
+
         // Log dữ liệu trước khi gửi để kiểm tra
         console.log({
             name: name,
@@ -97,7 +100,7 @@ const Pay = () => {
             wards: ward,
             address: address
         });
-    
+
         // Gửi yêu cầu POST để tạo đơn hàng
         axios.post("http://127.0.0.1:8000/api/abate", {
             name: name,
@@ -110,16 +113,64 @@ const Pay = () => {
             wards: ward,
             address: address
         })
-            .then((result) => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Đặt hàng thành công',
-                }).then(() => {
-                    navigate("/");
-                });
+            .then(() => {
+                // Tạo hiệu ứng bắn mảnh giấy liên tục khi đặt hàng thành công
+                const shootConfetti = () => {
+                    // Bắn từ góc trái
+                    confetti({
+                        particleCount: 50,
+                        spread: 70,
+                        origin: { x: 0.1, y: 0.8 }
+                    });
+
+                    // Bắn từ góc phải
+                    confetti({
+                        particleCount: 50,
+                        spread: 70,
+                        origin: { x: 0.9, y: 0.8 }
+                    });
+                };
+
+                // Bắn confetti mỗi 200ms trong 2 giây
+                const confettiInterval = setInterval(shootConfetti, 500);
+                setTimeout(() => clearInterval(confettiInterval), 3000); // Dừng bắn sau 2 giây
+
+                // Xóa các sản phẩm đã đặt khỏi giỏ hàng sau khi đặt hàng thành công
+                const deleteRequests = products.map(product =>
+                    axios.delete(`http://127.0.0.1:8000/api/product/cart-list/${product.id}`)
+                );
+
+                // Đợi tất cả các yêu cầu xóa hoàn tất
+                Promise.all(deleteRequests)
+                    .then(() => {
+                        console.log('Các sản phẩm đã được xóa khỏi giỏ hàng');
+
+                        // Hiển thị thông báo với 2 tùy chọn
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đặt hàng thành công',
+                            text: 'Bạn muốn làm gì tiếp theo?',
+                            showCancelButton: true,
+                            confirmButtonText: 'Tiếp tục mua hàng',
+                            cancelButtonText: 'Về trang chủ',
+                            backdrop: 'rgba(0, 0, 0, 0.5)' // Đặt nền đen mờ để tương phản với confetti
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Tiếp tục mua hàng
+                                navigate("/tat-ca-san-pham"); // Điều hướng đến trang cửa hàng
+                            } else {
+                                // Về trang chủ
+                                navigate("/"); // Điều hướng đến trang chủ
+                            }
+                        });
+                    })
+                    .catch((err) => {
+                        console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", err);
+                        // Điều hướng về trang chủ ngay cả khi xảy ra lỗi xóa sản phẩm
+                        navigate("/");
+                    });
             })
             .catch((err) => {
-                // setLoading(false);
                 if (err.response && err.response.status === 422) {
                     console.error("Lỗi 422: Dữ liệu không hợp lệ", err.response.data); // Kiểm tra lỗi cụ thể từ server
                     setErrorMessage("Lỗi 422: Dữ liệu không hợp lệ");
@@ -128,12 +179,6 @@ const Pay = () => {
                 }
             });
     }
-    
-    
-
-    
-    
-
 
 
     //const fee = 40000;
@@ -141,15 +186,8 @@ const Pay = () => {
         return selectedProvince !== ''; // Kiểm tra xem có tỉnh nào được chọn hay không
     };
 
-
-
-
-
     const location = useLocation();
     const { selectedItems, totalAmount } = location.state || { selectedItems: [], totalAmount: 0 };
-    //const { selectedItems } = location.state || { selectedItems: [] };
-
-
     // Hàm để tính tổng số tiền
     const calculateTotalAmount = () => {
         const total = products.reduce((acc, product) => acc + (product.price * product.quantity), 0);
@@ -165,8 +203,6 @@ const Pay = () => {
     useEffect(() => {
         setTotalMoney(totalAmount + fee); // Cập nhật totalMoney
     }, [totalAmount, fee]);
-
-
 
     const formatCurrency = (value) => value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -216,8 +252,6 @@ const Pay = () => {
             fetchWards();
         }
     }, [selectedDistrict]);
-
-
     return (
         <>
             <Form className="abate" onSubmit={handleSubmit}>
@@ -231,7 +265,6 @@ const Pay = () => {
                                 <div className="col-6">
                                     <div className=" my-3">
                                         <b>Thông tin người nhận</b>
-
                                     </div>
                                     <div className="mb-3">
                                         <input type="email" name="email" className="form-control" onChange={handleChange}
@@ -315,8 +348,6 @@ const Pay = () => {
                                                 <option key={ward.id} value={ward.id}>{ward.name}</option>
                                             ))}
                                         </select>
-
-
                                     </div>
 
                                     <div className="mb-3">
@@ -364,14 +395,9 @@ const Pay = () => {
                                                 <SiCashapp />
                                             </span>
                                         </div>
-
-
                                     </div>
-
                                 </div>
                             </div>
-
-
                         </div>
                         <div className="col-4  " style={{ height: "730px", width: "400px", borderLeft: "3px solid lightgray" }} >
                             <div className="order container">
@@ -433,24 +459,7 @@ const Pay = () => {
                                             </strong>
                                         </div>
                                         <hr />
-                                        {/* <div className="d-flex justify-content-between"
 
-                                        >
-                                            <strong style={{ fontSize: "25px", fontWeight: "bold" }}>Tổng tiền:</strong>
-                                            <strong style={{ color: "red", fontSize: "25px", fontWeight: "bold" }}
-                                                value={totalAmount}
-                                                onChange={(e) => setTotalMoney(e.target.value)} >
-                                                {
-                                                    isShowComplete() ?
-                                                        (
-                                                            <p >{formatCurrency(totalAmount + fee)}</p>
-                                                        ) : (
-                                                            <p>{formatCurrency(totalAmount)}</p>
-                                                        )
-                                                }
-                                            </strong>
-
-                                        </div> */}
                                         <div className="d-flex justify-content-between">
                                             <p>Tổng tiền:</p>
                                             <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
@@ -465,14 +474,9 @@ const Pay = () => {
                         </div>
 
                     </div>
-
-
-
                 </div>
             </Form>
-
         </>
-
     );
 }
 export default Pay;

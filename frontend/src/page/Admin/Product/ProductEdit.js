@@ -29,7 +29,7 @@ const ProductEdit = () => {
         getCategories();
     }, []);
     const token = localStorage.getItem("token");
-    console.log(token);
+    //console.log(token);
     const getProduct = async () => {
         try {
             const response = await axios.get(

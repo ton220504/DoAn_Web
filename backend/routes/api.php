@@ -42,11 +42,12 @@ Route::get('/auth', 'App\Http\Controllers\UserController@getAuthenticatedUser');
 Route::post('/register', 'App\Http\Controllers\UserController@register');//6
 Route::post('/login', [UserController::class, 'login']);//7
 
-
+//user
 Route::get('/user/default-address', [AddressController::class, 'show']);
 Route::post('/user/create-user-address', [AddressController::class, 'createUser']);
 Route::post('/user/address', [AddressController::class, 'store']);
 Route::get('/users', 'App\Http\Controllers\UserController@show');//8
+Route::delete('/users/{id}', 'App\Http\Controllers\UserController@deleteUser');//8
 
 Route::get('/products', 'App\Http\Controllers\ProductController@index');//8
 Route::get('/products/{id}', 'App\Http\Controllers\ProductController@show');//9
@@ -59,8 +60,15 @@ Route::get('/productSearch', 'App\Http\Controllers\ProductController@showAllSear
 
 Route::get('/product/category/{id}', [ProductCategoriesController::class, 'getProductsByCategory']);//show product by id //14
 Route::get('/product/category/paginate/{id}', [ProductCategoriesController::class, 'getProductsByCategoryPaginate']);//show product by category by id //15
+
+
+
 //abate
 Route::post('/abate', 'App\Http\Controllers\AbateController@store');
+Route::get('/abate/getAll', 'App\Http\Controllers\AbateController@getAll');
+Route::get('/abate/getAbate/{id}', 'App\Http\Controllers\AbateController@getAbateById');
+Route::delete('/abate/{id}', 'App\Http\Controllers\AbateController@delete');
+
 
 
 Route::get('/product/hot-deal', [ProductDealsController::class, 'hotDeals']);
@@ -83,6 +91,7 @@ Route::get('/product/categories/{id}', [CategoryController::class, 'show']);//20
 Route::get('/product/cart-list/count', [ProductShoppingCartController::class, 'cartCount']);
 Route::delete('/product/cart-list/{id}', [ProductShoppingCartController::class, 'destroy']);//21
 Route::get('/product/cart-list', [ProductShoppingCartController::class, 'index']);//22
+Route::get('/product/allshoppingcart', [ProductShoppingCartController::class, 'getAllShoppingCart']);//22
 Route::post('/product/cart-list', 'App\Http\Controllers\ProductShoppingCartController@store');//23
 Route::put('/product/cart-list/{id}', 'App\Http\Controllers\ProductShoppingCartController@update');//24
 Route::delete('/cart-list/clear-selected', [ProductShoppingCartController::class, 'clearSelected']);
@@ -93,6 +102,7 @@ Route::get('/product/wishlist/count', 'App\Http\Controllers\ProductWishlistContr
 Route::get('/product/wishlist', 'App\Http\Controllers\ProductWishlistController@index');
 Route::post('/product/wishlist', 'App\Http\Controllers\ProductWishlistController@store');
 Route::delete('/product/wishlist/{id}', 'App\Http\Controllers\ProductWishlistController@destroy');
+Route::get('/product/wishlist/all', 'App\Http\Controllers\ProductWishlistController@getAll');
 
 Route::get('/product/stocks/{id}', [StockController::class, 'show']);
 Route::post('/newsletter', 'App\Http\Controllers\NewsLetterController@store');

@@ -9,6 +9,7 @@ import axios from "axios";
 
 
 
+
 const Products = () => {
   // State hooks to replace class state
   const [loading, setLoading] = useState(true);
@@ -57,7 +58,7 @@ const Products = () => {
   }
 
 
-  // Similar to componentDidMount
+  
   useEffect(() => {
     getProducts();
   }, [getProducts]);

@@ -21,6 +21,12 @@ class ProductShoppingCartController extends Controller
         return response()->json($cartItems);
     }
 
+    public function getAllShoppingCart()
+    {
+        return shoppingCart::with('user', 'stock')->get();
+    }
+
+
     public function store(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();

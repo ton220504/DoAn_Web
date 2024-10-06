@@ -45,13 +45,13 @@ const Category = () => {
 
     const deleteCategory = async (id) => {
         const isConfirm = await Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "warning",
+            title: "Bạn có chắc không?",
+            text: "Bạn sẽ không thể hoàn nguyên điều này!",
+            icon: "Cảnh báo",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
+            confirmButtonText: "Có, xóa nó!",
         });
 
         if (!isConfirm.isConfirmed) {
@@ -62,15 +62,15 @@ const Category = () => {
             await axios.delete(`http://127.0.0.1:8000/api/product/categories/${id}`);
             Swal.fire({
                 icon: "success",
-                title: "Deleted!",
-                text: "Category has been deleted successfully.",
+                title: "xóa!",
+                text: "Xóa thành công.",
             }).then(() => {
                 fetchCategories();
             });
         } catch (error) {
-            console.error("Failed to delete category", error);
+            console.error("Lỗi khi xóa", error);
             Swal.fire({
-                text: "Failed to delete category",
+                text: "Lỗi khi xóa",
                 icon: "error",
             });
         }
@@ -137,7 +137,7 @@ const Category = () => {
                 <form onSubmit={submitCategory}>
                     <div className="container-fluid card shadow my-2 mx-2">
                         <div>
-                            <h3 className="text-success text-center">Create Category</h3>
+                            <h3 className="text-success text-center">Thêm thương hiệu</h3>
                         </div>
                         <div className="mb-3 mt-3">
                             <label htmlFor="name" className="form-label">Thương hiệu</label>
@@ -159,11 +159,11 @@ const Category = () => {
                 <div className="container-fluid">
                     <div className="card shadow mb-4">
                         <div className="card-header py-3 d-flex justify-content-between align-items-center">
-                            <h6 className="m-0 font-weight-bold text-primary">All Category</h6>
+                            <h6 className="m-0 font-weight-bold text-primary">Tất cả thương hiệu</h6>
                         </div>
                         <div className="card-body">
                             <div className="table-responsive">
-                                <table className="table table-bordered" id="dataTable" cellSpacing="0" style={{ width: "700px" }}>
+                                <table className="table table-bordered" id="dataTable" cellSpacing="0" width="100%">
                                     <thead>
                                         <tr>
                                             <th>Id</th>
@@ -171,7 +171,7 @@ const Category = () => {
                                             <th style={{ width: "150px" }}>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody style={{ textAlign: "center" }}>
                                         {categories.map((category) => (
                                             <tr key={category.id}>
                                                 <td>{category.id}</td>

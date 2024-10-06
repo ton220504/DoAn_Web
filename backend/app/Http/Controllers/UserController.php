@@ -73,4 +73,14 @@ class UserController extends Controller
     {
         return User::all();
     }
+    public function deleteUser($id)
+    {
+        $user = User::find($id);  // Tìm bản ghi với id
+        if ($user) {
+            $user->delete();  // Xóa bản ghi nếu tìm thấy
+            return response()->json(['message' => 'Xóa thành công!'], 200);
+        } else {
+            return response()->json(['message' => 'Bản ghi không tồn tại!'], 404);
+        }
+    }
 }
