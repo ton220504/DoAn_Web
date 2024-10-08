@@ -9,6 +9,7 @@ import Laptop from "./Product/Laptop";
 import Cammera from "./Product/Cammera";
 import Headphones from "./Product/Headphones";
 import ToastMessage from "../ToastMessage";
+import Post from "./Post";
 
 //import Deal from "./Deal";
 
@@ -70,6 +71,7 @@ const Home = () => {
             <Laptop/>
             <Cammera/>
             <Headphones/>
+            <Post/>
             
             <Follow />
         </>

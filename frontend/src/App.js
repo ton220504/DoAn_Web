@@ -16,6 +16,7 @@ import Layoutbackend from './layout/BE/layout';
 import Approuter from './router';
 import WishList from './page/Product/WishList';
 import SearchItem from './Components/Home/SearchItem';
+import PostDetail from './Components/Home/PostDetail';
 
 
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -50,6 +51,7 @@ function App() {
           <Route path="tat-ca-san-pham" element={<AllProduct />} />
           <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
           <Route path="search-results" element={<SearchItem />} />
+          <Route path="/chi-tiet-bai-viet/:id" element={<PostDetail />} />
 
         </Route>
         <Route path="thanh-toan" element={<Pay />} />

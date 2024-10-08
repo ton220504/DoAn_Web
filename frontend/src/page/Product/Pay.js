@@ -7,6 +7,7 @@ import { Button, Table, Form } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
 import confetti from 'canvas-confetti';
+import { Spinner } from 'react-bootstrap';
 
 const Pay = () => {
 
@@ -14,6 +15,8 @@ const Pay = () => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const [selectedProvince, setSelectedProvince] = useState("");
@@ -39,6 +42,19 @@ const Pay = () => {
     //const [totalAmount, setTotalAmount] = useState(0);
     const fee = 40000; // Đặt phí cố định
 
+    // Style cho overlay
+    const overlayStyle = {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)', // Màu nền mờ
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000 // Đảm bảo nó nằm trên cùng
+    };
 
     function handleChange(e) {
         const { name, value } = e.target;
@@ -131,9 +147,10 @@ const Pay = () => {
                     });
                 };
 
-                // Bắn confetti mỗi 200ms trong 2 giây
-                const confettiInterval = setInterval(shootConfetti, 500);
-                setTimeout(() => clearInterval(confettiInterval), 3000); // Dừng bắn sau 2 giây
+                // Hiển thị trạng thái loading
+                setIsLoading(true);
+
+
 
                 // Xóa các sản phẩm đã đặt khỏi giỏ hàng sau khi đặt hàng thành công
                 const deleteRequests = products.map(product =>
@@ -144,6 +161,11 @@ const Pay = () => {
                 Promise.all(deleteRequests)
                     .then(() => {
                         console.log('Các sản phẩm đã được xóa khỏi giỏ hàng');
+                        // Sau khi xóa xong, tắt loading
+                        setIsLoading(false);
+                        // Bắn confetti mỗi 200ms trong 2 giây
+                        const confettiInterval = setInterval(shootConfetti, 500);
+                        setTimeout(() => clearInterval(confettiInterval), 3000); // Dừng bắn sau 2 giây
 
                         // Hiển thị thông báo với 2 tùy chọn
                         Swal.fire({
@@ -214,6 +236,8 @@ const Pay = () => {
                 setProvinces(response.data.data);
             } catch (error) {
                 console.error('Error fetching provinces:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -230,6 +254,8 @@ const Pay = () => {
 
                 } catch (error) {
                     console.error('Error fetching districts:', error);
+                } finally {
+                    setLoading(false);
                 }
             };
 
@@ -246,16 +272,30 @@ const Pay = () => {
                     setWards(response.data.data);
                 } catch (error) {
                     console.error('Error fetching wards:', error);
+                } finally {
+                    setLoading(false);
                 }
             };
 
             fetchWards();
         }
     }, [selectedDistrict]);
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" alt="Loading..." />
+            </div>
+        );
+    }
     return (
         <>
             <Form className="abate" onSubmit={handleSubmit}>
                 <div className="Pay container">
+                    {isLoading && (
+                        <div style={overlayStyle}>
+                            <Spinner animation="border" variant="light" /> {/* Loading spinner */}
+                        </div>
+                    )}
                     <div className=" row">
                         <div className="col-8">
                             <div className="main-header">

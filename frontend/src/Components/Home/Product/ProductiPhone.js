@@ -48,7 +48,12 @@ const ProductiPhone = () => {
             if (response.status === 200) {
                 setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
                 //setWishListItemCount((prevCount) => prevCount + 1);
-                toast.success("Đã thêm vào danh sách yêu thích!")
+                //toast.success("Đã thêm vào danh sách yêu thích!")
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                });
                 
             }
         } catch (error) {

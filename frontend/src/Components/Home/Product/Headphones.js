@@ -46,7 +46,11 @@ const Headphones = () => {
 
             if (response.status === 200) {
                 setFavoriteProducts([...favoriteProducts, productId]); // Thêm productId vào danh sách yêu thích
-                toast.success("Đã thêm vào danh sách yêu thích!")
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã thêm vào danh sách yêu thích!',
+                    confirmButtonText: 'OK'
+                });
             }
         } catch (error) {
             if (error.response && error.response.status === 405) {

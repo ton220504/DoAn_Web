@@ -50,7 +50,7 @@ const Cammera = () => {
                     title: 'Đã thêm vào danh sách yêu thích!',
                     confirmButtonText: 'OK'
                 });
-                toast.success("Đã thêm vào danh sách yêu thích!")
+                //toast.success("Đã thêm vào danh sách yêu thích!")
             }
         } catch (error) {
             if (error.response && error.response.status === 405) {
