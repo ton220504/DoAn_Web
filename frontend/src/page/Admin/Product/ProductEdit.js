@@ -13,11 +13,8 @@ const ProductEdit = () => {
         brand: "",
         description: "",
         details: "",
-        photos: [],
-        price: "",
-        size: "",
-        color: "",
-        quantity: 1,
+        price: ""
+        
     });
 
     const [categories, setCategories] = useState([]);
@@ -37,28 +34,13 @@ const ProductEdit = () => {
             );
             const productData = response.data;
 
-            let photos;
-            try {
-                photos = JSON.parse(productData.photo);
-            } catch (e) {
-                photos = [productData.photo];
-            }
-
-            if (productData.stocks.length > 0) {
-                const stock = productData.stocks[0]; // Assuming single stock entry per product for simplicity
+          
                 setProduct({
                     ...productData,
-                    photos: photos,
-                    size: stock.size,
-                    color: stock.color,
-                    quantity: stock.quantity,
+                    
+                    
                 });
-            } else {
-                setProduct({
-                    ...productData,
-                    photos: photos,
-                });
-            }
+           
         } catch (error) {
             console.error(error);
         }
@@ -78,7 +60,7 @@ const ProductEdit = () => {
         e.preventDefault();
         try {
             await axios.put(`http://127.0.0.1:8000/api/products/${id}`, product, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                //headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setSuccess(true);
             navigate("/admin/product");

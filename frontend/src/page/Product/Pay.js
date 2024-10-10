@@ -15,7 +15,7 @@ const Pay = () => {
     const [provinces, setProvinces] = useState([]);
     const [districts, setDistricts] = useState([]);
     const [wards, setWards] = useState([]);
-    const [loading, setLoading] = useState(true);
+    //const [loading, setLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -236,8 +236,6 @@ const Pay = () => {
                 setProvinces(response.data.data);
             } catch (error) {
                 console.error('Error fetching provinces:', error);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -254,8 +252,6 @@ const Pay = () => {
 
                 } catch (error) {
                     console.error('Error fetching districts:', error);
-                } finally {
-                    setLoading(false);
                 }
             };
 
@@ -272,21 +268,19 @@ const Pay = () => {
                     setWards(response.data.data);
                 } catch (error) {
                     console.error('Error fetching wards:', error);
-                } finally {
-                    setLoading(false);
                 }
             };
 
             fetchWards();
         }
     }, [selectedDistrict]);
-    if (loading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" alt="Loading..." />
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    //             <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" alt="Loading..." />
+    //         </div>
+    //     );
+    // }
     return (
         <>
             <Form className="abate" onSubmit={handleSubmit}>

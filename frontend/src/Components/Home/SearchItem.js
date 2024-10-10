@@ -39,18 +39,22 @@ const SearchItem = () => {
     }, [getProducts]);
 
     useEffect(() => {
-        const searchTerms = query.toLowerCase().split(' ');
+        // Chuẩn hóa từ khóa tìm kiếm: loại bỏ khoảng trắng thừa và chuyển về chữ thường
+        const searchTerm = query.toLowerCase().trim().replace(/\s+/g, '');
     
-        console.log("Search terms:", searchTerms); // Debug: Kiểm tra các từ khóa
+        console.log("Search term (normalized):", searchTerm); // Debug: Kiểm tra từ khóa tìm kiếm sau chuẩn hóa
         
-    
-        const results = products.filter(item => 
-            searchTerms.some(term => item.name.toLowerCase().includes(term))
-        );
+        // Lọc sản phẩm: loại bỏ khoảng trắng trong tên sản phẩm và kiểm tra xem có chứa từ khóa không
+        const results = products.filter(item => {
+            const normalizedProductName = item.name.toLowerCase().replace(/\s+/g, ''); // Loại bỏ khoảng trắng trong tên sản phẩm
+            return normalizedProductName.includes(searchTerm);
+        });
     
         console.log("Filtered Products:", results); // Debug: Kiểm tra kết quả lọc
         setFilteredProducts(results);
     }, [products, query]);
+    
+    
     
     
     if (loading) {
@@ -69,9 +73,9 @@ const SearchItem = () => {
     return (
         <>
             <ComeBack />
-            <div className="container my-3">
+            <div className="container my-3" >
                 <h3>Kết quả tìm kiếm cho: "{query}"</h3>
-                <div className="row my-3">
+                <div className="row my-3 justify-content-center">
                     {filteredProducts.length > 0 ? (
                         filteredProducts.map((item) => (
                             <Card className="box col-2 m-2 product-card" key={item.id}>

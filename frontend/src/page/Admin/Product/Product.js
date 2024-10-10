@@ -113,7 +113,7 @@ const Products = () => {
     <div className="container-fluid">
       <div className="card shadow mb-4">
         <div className="card-header py-3 d-flex justify-content-between align-items-center">
-          <h6 className="m-0 font-weight-bold text-primary">All Products</h6>
+          <h6 className="m-0 font-weight-bold text-primary">Tất cả sản phẩm</h6>
           <Link to={'/admin/productCreate'} className="btn btn-success my-2 me-2 ">Thêm sản phẩm</Link>
         </div>
         <div className="card-body">

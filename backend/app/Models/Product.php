@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['user_id', 'category_id', 'photo', 'brand ', 'name', 'description', 'details', 'price'];
+    protected $fillable = ['user_id', 'category_id',  'brand', 'name', 'description', 'details', 'price','photo','deal_id'];
     //protected $fillable = ['name', 'category_id', 'brand', 'description', 'details', 'price', 'size', 'color', 'quantity'];
 
 
@@ -32,6 +32,7 @@ class Product extends Model
     {
         return $this->hasMany(Photo::class);
     }
+
 }
 
 // namespace App\Models;
