@@ -10,6 +10,7 @@ use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,8 @@ Route::get('/productSearch', 'App\Http\Controllers\ProductController@showAllSear
 Route::get('/product/category/{id}', [ProductCategoriesController::class, 'getProductsByCategory']);//show product by id //14
 Route::get('/product/category/paginate/{id}', [ProductCategoriesController::class, 'getProductsByCategoryPaginate']);//show product by category by id //15
 
+//thanh toán
+Route::post('/vnpay_payment',[PaymentController::class,'vnpay_payment']);
 
 
 //abate

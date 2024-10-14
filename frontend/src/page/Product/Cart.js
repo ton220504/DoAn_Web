@@ -84,13 +84,6 @@ const Cart = () => {
 
     const thanhtien = (price, quantity) => price * quantity;
 
-    // const tinhTongTien = () => {
-    //     return product.reduce((total, item) => {
-    //         const price = item.price || 0;
-    //         return total + thanhtien(price, item.quantity);
-    //     }, 0);
-    // };
-
     const tinhTongTien = () => {
         return product
             .filter(item => selectedProducts.includes(item.id))

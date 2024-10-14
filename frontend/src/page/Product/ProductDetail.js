@@ -267,13 +267,7 @@ const ProductDetail = () => {
                             <span>Giá cũ: <strike className="price-old">10.000.000đ</strike></span>
 
                         </div>
-                        {/* Quantity Selection */}
-                        {/* <div className="quantity-selection">
-                            <span >Số lượng</span>
-                            <button onClick={decrementQuantity}>-</button>
-                            <input className='text-center' value={quantity} readOnly style={{ width: "50px" }} />
-                            <button onClick={incrementQuantity}>+</button>
-                        </div> */}
+                       
                         <div className="quantity-selection">
                             <span>Số lượng</span>
                             <div className="quantity-controls">

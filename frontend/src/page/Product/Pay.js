@@ -23,9 +23,11 @@ const Pay = () => {
     const [selectedDistrict, setSelectedDistrict] = useState("");
     const [selectedWard, setSelectedWard] = useState("");
     const navigate = useNavigate();
-    const [errorMessage, setErrorMessage] = useState(""); // Lưu thông báo lỗi từ server
-    //clearCart
-    const [product, setProduct] = useState([])
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const [paymentMethod, setPaymentMethod] = useState("");  // Lưu phương thức thanh toán
+
+
 
 
     //abate
@@ -89,9 +91,6 @@ const Pay = () => {
         }
     }
 
-
-
-
     function handleSubmit(e) {
         e.preventDefault();
 
@@ -130,6 +129,7 @@ const Pay = () => {
             address: address
         })
             .then(() => {
+                
                 // Tạo hiệu ứng bắn mảnh giấy liên tục khi đặt hàng thành công
                 const shootConfetti = () => {
                     // Bắn từ góc trái
@@ -149,8 +149,6 @@ const Pay = () => {
 
                 // Hiển thị trạng thái loading
                 setIsLoading(true);
-
-
 
                 // Xóa các sản phẩm đã đặt khỏi giỏ hàng sau khi đặt hàng thành công
                 const deleteRequests = products.map(product =>
@@ -185,6 +183,8 @@ const Pay = () => {
                                 navigate("/"); // Điều hướng đến trang chủ
                             }
                         });
+
+
                     })
                     .catch((err) => {
                         console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", err);
@@ -203,7 +203,12 @@ const Pay = () => {
     }
 
 
+
     //const fee = 40000;
+
+
+
+
     const isShowComplete = () => {
         return selectedProvince !== ''; // Kiểm tra xem có tỉnh nào được chọn hay không
     };
@@ -274,13 +279,7 @@ const Pay = () => {
             fetchWards();
         }
     }, [selectedDistrict]);
-    // if (loading) {
-    //     return (
-    //         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-    //             <img style={{ width: "100px", height: "100px" }} src="./img/loading-gif-png-5.gif" alt="Loading..." />
-    //         </div>
-    //     );
-    // }
+
     return (
         <>
             <Form className="abate" onSubmit={handleSubmit}>
@@ -414,7 +413,7 @@ const Pay = () => {
                                         <div className="method-cash form-control">
                                             <div className="cash">
                                                 <input type="radio" id="cash" name="fav_language" />
-                                                <label >Tiền mặt</label>
+                                                <label >Thanh toán tiền mặt</label>
                                             </div>
                                             <span className="icon">
                                                 <SiCashapp />
@@ -423,13 +422,14 @@ const Pay = () => {
                                         <div className="method-transfer mt-2 form-control">
                                             <div className="transfer">
                                                 <input type="radio" id="transfer" name="fav_language" />
-                                                <p >Chuyển khoản</p>
+                                                <p >Thanh toán Momo</p>
                                             </div>
                                             <span className="icon">
                                                 <SiCashapp />
                                             </span>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -500,8 +500,15 @@ const Pay = () => {
                                                 {formatCurrency(totalMoney)} {/* Hiển thị tổng tiền */}
                                             </strong>
                                         </div>
-                                        <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán</button>
+                                        <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán bằng tiền mặt</button>
 
+                                        <div>
+                                            <form id="vnpayForm" action="http://127.0.0.1:8000/api/vnpay_payment" method="POST">
+                                                <input type="hidden" name="total" value={totalMoney} />
+                                                <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }} name="redirect" >Thanh toán bằng VNPAY</button>
+                                            </form>
+                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -510,6 +517,7 @@ const Pay = () => {
                     </div>
                 </div>
             </Form>
+
         </>
     );
 }

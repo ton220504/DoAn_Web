@@ -17,7 +17,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         setErrorMessage(""); // Xóa thông báo lỗi trước đó
-    
+
         axios
             .post("http://127.0.0.1:8000/api/login", {
                 email: email,
@@ -33,7 +33,7 @@ const Login = () => {
                     // Chuyển hướng đến trang chủ sau khi người dùng nhấn nút "OK"
                     navigate("/");
                     window.location.reload();
-                    
+
                 });
                 setLoading(false);
             })
@@ -47,8 +47,8 @@ const Login = () => {
                     } else if (err.response.status === 400) {
                         // Nếu API trả về mã lỗi 404 khi email không tồn tại
                         setErrorMessage("Đăng nhập thất bại, vui lòng kiểm tra Email hoặc Mật khẩu của bạn.");
-                    } 
-                     else {
+                    }
+                    else {
                         // Xử lý các lỗi khác nếu có
                         setErrorMessage("Có lỗi xảy ra. Vui lòng thử lại!");
                     }
@@ -57,7 +57,7 @@ const Login = () => {
                 }
             });
     }
-    
+
 
     function handleChange(e) {
         if (e.target.name === "email") setEmail(e.target.value);
@@ -70,6 +70,15 @@ const Login = () => {
             <ComeBack />
             <Form className="mt-5 Login" onSubmit={handleSubmit}>
                 <div className="content-login">
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <img
+                            className="img-header"
+                            src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/logo.png?1719291840576"
+                            style={{ width: "200px", marginBottom:"10px" }}
+                            alt="Logo"
+                        />
+                    </div>
+
                     <h4 className="text-center">Đăng nhập</h4>
                     {/* Hiển thị thông báo lỗi nếu có */}
                     {errorMessage && (
@@ -78,14 +87,14 @@ const Login = () => {
                         </div>
                     )}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Nhập Email</Form.Label>
-                        <Form.Control type="email" name="email" placeholder="Enter email" onChange={handleChange} />
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control type="email" name="email" placeholder="Email..." onChange={handleChange} />
 
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Nhập mật khẩu</Form.Label>
-                        <Form.Control type="password" name="password" placeholder="Password" onChange={handleChange} />
+                        <Form.Label>Mật khẩu</Form.Label>
+                        <Form.Control type="password" name="password" placeholder="Mật khẩu..." onChange={handleChange} />
                     </Form.Group>
                     <Link className="forgot">Quên mật khẩu</Link>
                     <Link to="/dangki" className="register">Đăng kí tại đây</Link>
@@ -109,7 +118,7 @@ const Login = () => {
                         )}
                     </Button>
                 </div>
-                
+
             </Form>
         </>
 

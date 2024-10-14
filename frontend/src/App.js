@@ -17,6 +17,10 @@ import Approuter from './router';
 import WishList from './page/Product/WishList';
 import SearchItem from './Components/Home/SearchItem';
 import PostDetail from './Components/Home/PostDetail';
+import CheckoutVnpay from './page/Product/CheckoutVnpay';
+
+
+
 
 
 //import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -52,9 +56,12 @@ function App() {
           <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
           <Route path="search-results" element={<SearchItem />} />
           <Route path="/chi-tiet-bai-viet/:id" element={<PostDetail />} />
+          
 
         </Route>
         <Route path="thanh-toan" element={<Pay />} />
+        <Route path="checkout-vnpay" element={<CheckoutVnpay />} />
+        
       </Routes>
     </BrowserRouter>
     

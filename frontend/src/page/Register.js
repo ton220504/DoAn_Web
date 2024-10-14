@@ -83,6 +83,14 @@ const Register = (props) => {
             <ComeBack />
             <Form className="mt-5 Login auth" onSubmit={handleSubmit}>
                 <div className="content-login">
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <img
+                            className="img-header"
+                            src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/logo.png?1719291840576"
+                            style={{ width: "200px", marginBottom: "10px" }}
+                            alt="Logo"
+                        />
+                    </div>
                     <h4 className="text-center">Đăng kí</h4>
                     <div className="text-center mb-3">
                         <span>Có tài khoản đăng nhập
@@ -98,17 +106,22 @@ const Register = (props) => {
                     )}
 
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Control type="name" name="name" placeholder="Tên" onChange={handleChange} />
+                        <Form.Label>Tên</Form.Label>
+                        <Form.Control type="name" name="name" placeholder="Tên..." onChange={handleChange} />
                     </Form.Group>
+
                     <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Control type="email" name="email" placeholder="Nhập email" onChange={handleChange} />
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control type="email" name="email" placeholder="Email..." onChange={handleChange} />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Control type="password" name="password" placeholder="Nhập mật khẩu" onChange={handleChange} />
+                        <Form.Label>Mật khẩu</Form.Label>
+                        <Form.Control type="password" name="password" placeholder="Mật khẩu..." onChange={handleChange} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicPasswordConfirm">
-                        <Form.Control type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu" onChange={handleChange} />
+                    <Form.Label>Nhập lại mật khẩu</Form.Label>
+                        <Form.Control type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu..." onChange={handleChange} />
                     </Form.Group>
                 </div>
                 <div className="button p-3">
