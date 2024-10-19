@@ -13,8 +13,9 @@ const ProductEdit = () => {
         brand: "",
         description: "",
         details: "",
-        price: ""
-        
+        price: "",
+        photo: "", // Giả sử bạn lưu ảnh dưới dạng mảng
+
     });
 
     const [categories, setCategories] = useState([]);
@@ -33,14 +34,15 @@ const ProductEdit = () => {
                 `http://127.0.0.1:8000/api/products/${id}`
             );
             const productData = response.data;
+            setProduct({
+                ...productData,
+            });
+            // Giả sử ảnh cũ là một chuỗi JSON, bạn có thể phân tích nó nếu cần
+            // setProduct({
+            //     ...productData,
+            //     photo: productData.photo // Giữ ảnh cũ trong trạng thái
+            // });
 
-          
-                setProduct({
-                    ...productData,
-                    
-                    
-                });
-           
         } catch (error) {
             console.error(error);
         }
@@ -59,26 +61,91 @@ const ProductEdit = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://127.0.0.1:8000/api/products/${id}`, product, {
+            // Chuyển đổi photo về định dạng mảng trước khi gửi lên server
+            const updatedProduct = {
+                ...product,
+                photo: product.photo ? JSON.parse(product.photo) : [] // Chuyển đổi từ JSON về mảng hoặc giữ nguyên nếu không có ảnh
+            };
+            await axios.put(`http://127.0.0.1:8000/api/products/${id}`, updatedProduct , {
                 //headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setSuccess(true);
+            alert("Cập nhật sản phẩm thành công!");
             navigate("/admin/product");
         } catch (err) {
             setError("An unexpected error occurred. Please try again.");
             console.error(err);
         }
     };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     const formData = new FormData();
 
+    //     // Thêm tất cả các thuộc tính vào FormData
+    //     for (const key in product) {
+    //         if (key === "photo" && Array.isArray(product.photo)) {
+    //             // Nếu là mảng, thêm từng file vào FormData
+    //             product.photo.forEach((file) => {
+    //                 formData.append("photos[]", file); // Gửi từng file
+    //             });
+    //         } else {
+    //             // Nếu không phải ảnh, thêm các thuộc tính khác
+    //             formData.append(key, product[key]);
+    //         }
+    //     }
+
+    //     try {
+    //         await axios.put(`http://127.0.0.1:8000/api/products/${id}`, formData, {
+    //             headers: { 'Content-Type': 'multipart/form-data' },
+    //             // headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    //         });
+    //         setSuccess(true);
+    //         navigate("/admin/product");
+    //     } catch (err) {
+    //         setError("An unexpected error occurred. Please try again.");
+    //         console.error(err);
+    //     }
+    // };
+
+    // const handleChange = (event) => {
+    //     const { name, value } = event.target;
+    //     setProduct({
+    //         ...product,
+    //         [name]: value,
+    //     });
+
+    //     if (success) {
+    //         setSuccess(false);
+    //     }
+    // };
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setProduct({
-            ...product,
-            [name]: value,
-        });
-
-        if (success) {
-            setSuccess(false);
+        const { name, files } = event.target;
+    
+        if (name === 'photo') {
+            // Nếu người dùng chọn tệp
+            if (files.length > 0) {
+                // Chuyển đổi files thành mảng tên tệp
+                const fileNames = Array.from(files).map(file => file.name);
+    
+                // Cập nhật trạng thái với tên tệp mới
+                setProduct(prev => ({
+                    ...prev,
+                    photo: JSON.stringify(fileNames) // Chuyển đổi thành JSON
+                }));
+            } else {
+                // Nếu không có tệp nào được chọn, giữ nguyên ảnh cũ
+                const currentPhotos = product.photo; // Lấy ảnh cũ
+                setProduct(prev => ({
+                    ...prev,
+                    photo: currentPhotos // Giữ nguyên ảnh cũ
+                }));
+            }
+        } else {
+            // Xử lý các trường khác
+            setProduct(prev => ({
+                ...prev,
+                [name]: event.target.value
+            }));
         }
     };
 
@@ -189,35 +256,35 @@ const ProductEdit = () => {
                                 required
                             />
                         </div>
-                        {/* <div className="form-group">
-                            <label className="small mb-1">Quantity</label>
-                            <input
-                                className="form-control"
-                                name="quantity"
-                                value={product.quantity}
-                                onChange={handleChange}
-                                type="number"
-                                placeholder="Product quantity"
-                                required
-                            />
-                        </div> */}
-                        {/* <div className="form-group">
+                       
+                        <div className="form-group">
                             <label className="small mb-1">Images</label>
                             <div>
-                                {product.photos &&
-                                    product.photos.map((photo, index) => (
+                                {product.photo && product.photo !== "" ? (
+                                    JSON.parse(product.photo).map((image, index) => (
                                         <img
                                             key={index}
-                                            src={`/img/${photo}`}
-                                            alt={photo}
-                                            className="img-thumbnail"
-                                            height="100px"
-                                            width="100px"
-                                            style={{ marginRight: "10px" }}
+                                            height="60px"
+                                            width="60px"
+                                            src={typeof image === "string" && image.includes("object") ? URL.createObjectURL(image) : `/img/${image}`} // Hiển thị từng ảnh
+                                            alt={`Hình ảnh ${index + 1}`}
+                                            style={{ margin: '5px' }}
                                         />
-                                    ))}
+                                    ))
+                                ) : (
+                                    <p>Không có hình ảnh</p> // Hiển thị nếu không có hình ảnh
+                                )}
                             </div>
-                        </div> */}
+                            <input
+                                className="form-control"
+                                name="photo"
+                                onChange={handleChange}
+                                placeholder="Upload image"
+                                type="file"
+                                multiple // Cho phép chọn nhiều ảnh
+                                
+                            />
+                        </div>
                         <div className="form-group">
                             <button className="btn btn-primary btn-block">
                                 Update Product

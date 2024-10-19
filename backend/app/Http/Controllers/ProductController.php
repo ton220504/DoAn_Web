@@ -172,28 +172,111 @@ class ProductController extends Controller
 
 
 
+    // public function update(Request $request, $id)
+    // {
+    //     // Find the product
+    //     $product = Product::findOrFail($id);
+
+    //     // Validate input
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'category_id' => 'required|exists:categories,id',
+    //         'brand' => 'required|string|max:255',
+    //         'description' => 'required|string',
+    //         'details' => 'required|string',
+    //         'price' => 'required|numeric',
+    //         'photo' => 'required|array', // Kiểm tra nếu photo là mảng
+    //         'photo.*' => 'string', // Kiểm tra từng phần tử của mảng là chuỗi
+
+    //     ]);
+    //     // Xử lý cập nhật ảnh
+    //  if (isset($validatedData['photo'])) {
+    //      // Nếu có ảnh mới được gửi lên
+    //      // Giả sử product->photo là mảng các tên file hiện tại
+    //      $currentPhotos = json_decode($product->photo, true); // Chuyển đổi từ JSON thành mảng
+    //      // Thêm các ảnh mới vào mảng hiện tại
+    //      $updatedPhotos = array_merge($currentPhotos, $validatedData['photo']);
+    //      // Lưu mảng ảnh mới vào thuộc tính photo của sản phẩm
+    //      $product->photo = json_encode($updatedPhotos); // Chuyển đổi lại thành JSON
+    //  }
+
+
+    //     // Update product attributes
+    //     $product->update($validatedData);
+
+
+
+    //     return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
+    // }
     public function update(Request $request, $id)
-{
-    // Find the product
-    $product = Product::findOrFail($id);
+    {
+        // Tìm sản phẩm
+        $product = Product::findOrFail($id);
 
-    // Validate input
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'category_id' => 'required|exists:categories,id',
-        'brand' => 'required|string|max:255',
-        'description' => 'required|string',
-        'details' => 'required|string',
-        'price' => 'required|numeric',
+        // Xác thực dữ liệu đầu vào
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id',
+            'brand' => 'required|string|max:255',
+            'description' => 'required|string',
+            'details' => 'required|string',
+            'price' => 'required|numeric',
+            'photo' => 'array', // Kiểm tra nếu photo là mảng
+            'photo.*' => 'string', // Kiểm tra từng phần tử của mảng là chuỗi
+        ]);
 
-    ]);
+        // Mảng để lưu tên của từng ảnh
+        $photoNames = [];
 
-    // Update product attributes
-    $product->update($validatedData);
+        // Lưu tên của các ảnh từ request vào mảng
+        if ($request->has('photo')) {
+            $photoNames = $request->input('photo'); // Giả định rằng tên file được gửi dưới dạng mảng
+        }
 
+        // Đường dẫn tới thư mục img trong frontend
+        $path = 'C:/Users/ACER_HANG/Desktop/DO_AN_TTTN/frontend/public/img'; // Đường dẫn đến thư mục img trong frontend
 
+        // Kiểm tra nếu thư mục không tồn tại, tạo nó
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
 
-    return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
-}
+        // Xử lý cập nhật ảnh
+        if (!empty($photoNames)) {
+            // Lấy ảnh cũ
+            $currentPhotos = json_decode($product->photo, true) ?: []; // Chuyển đổi từ JSON thành mảng hoặc khởi tạo mảng rỗng
+
+            foreach ($photoNames as $photoName) {
+                // Đường dẫn nguồn (nơi mà bạn đã tải ảnh về)
+                // Bạn có thể điều chỉnh đường dẫn này theo ý bạn
+                $sourcePath = "D:/java-projects/example14/public/images/{$photoName}"; // Thay đổi thành đường dẫn chính xác của bạn
+
+                // Đường dẫn đích
+                $destinationPath = $path . '/' . $photoName;
+
+                // Kiểm tra nếu ảnh đã tồn tại
+                if (!file_exists($destinationPath)) {
+                    // Di chuyển hoặc sao chép ảnh vào thư mục đích
+                    if (file_exists($sourcePath)) {
+                        // Sử dụng copy() để sao chép
+                        copy($sourcePath, $destinationPath);
+                    }
+                } else {
+                    // Log hoặc xử lý khi file đã tồn tại
+                    \Log::info("File {$photoName} đã tồn tại, không cần sao chép.");
+                }
+            }
+
+            // Cập nhật tên ảnh mới vào thuộc tính photo của sản phẩm
+            $updatedPhotos = array_merge($currentPhotos, $photoNames); // Kết hợp ảnh cũ với ảnh mới
+            $product->photo = json_encode($updatedPhotos); // Chuyển đổi lại thành JSON
+        }
+
+        // Cập nhật các thuộc tính sản phẩm khác
+        $product->update($validatedData);
+
+        return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
+    }
+
 
 }

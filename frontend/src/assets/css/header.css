@@ -422,3 +422,23 @@ a.dropdown-toggle::after {
     color: #fff;
   }
 }
+.suggestions-container {
+  position: absolute; /* Đảm bảo rằng nó nằm bên dưới ô tìm kiếm */
+  top: 115%; /* Đặt danh sách kết quả ngay dưới input search */
+  right: 45px; /* Đẩy danh sách sang phía bên phải */
+  z-index: 1000; /* Đảm bảo rằng nó hiển thị trên các phần tử khác */
+  background-color: white;
+  max-height: 300px; /* Giới hạn chiều cao và cho phép cuộn */
+  width: 700px; /* Đặt chiều rộng phù hợp cho danh sách kết quả */
+  overflow-y: auto; /* Cho phép cuộn nếu danh sách quá dài */
+  border: 1px solid #ccc;
+}
+
+.suggestion-item {
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: white;
+  /* border: 1px solid #ccc;
+  border-radius: 4px; */
+  white-space: nowrap; /* Đảm bảo văn bản không bị cắt dòng */
+}

@@ -70,6 +70,7 @@ Route::post('/vnpay_payment',[PaymentController::class,'vnpay_payment']);
 Route::post('/abate', 'App\Http\Controllers\AbateController@store');
 Route::get('/abate/getAll', 'App\Http\Controllers\AbateController@getAll');
 Route::get('/abate/getAbate/{id}', 'App\Http\Controllers\AbateController@getAbateById');
+Route::get('/abate/getAbateUserId/{userId}', 'App\Http\Controllers\AbateController@getAbateByUserId');
 Route::delete('/abate/{id}', 'App\Http\Controllers\AbateController@delete');
 
 

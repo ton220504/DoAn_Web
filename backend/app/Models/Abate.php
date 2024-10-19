@@ -12,6 +12,7 @@ class Abate extends Model
     // Danh sách các trường có thể điền được
     protected $fillable = [
         'name',
+        'user_id',
         'phone',
         'email',
         'products',  // Đảm bảo rằng products sẽ lưu JSON
@@ -21,4 +22,8 @@ class Abate extends Model
         'wards',
         'address'
     ];
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
 }

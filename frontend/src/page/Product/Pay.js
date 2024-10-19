@@ -3,11 +3,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import "../../scss/Cart.scss"
 import { SiCashapp } from "react-icons/si";
-import { Button, Table, Form } from "react-bootstrap";
+import { Button, Table, Form, Modal } from "react-bootstrap";
 import axios from "axios";
 import Swal from "sweetalert2";
 import confetti from 'canvas-confetti';
 import { Spinner } from 'react-bootstrap';
+
 
 const Pay = () => {
 
@@ -26,6 +27,8 @@ const Pay = () => {
     const [errorMessage, setErrorMessage] = useState("");
 
     const [paymentMethod, setPaymentMethod] = useState("");  // Lưu phương thức thanh toán
+    const [editModalShow, setEditModalShow] = useState(false);
+
 
 
 
@@ -93,6 +96,8 @@ const Pay = () => {
 
     function handleSubmit(e) {
         e.preventDefault();
+        // Giải mã token từ localStorage để lấy userId
+        const token = localStorage.getItem('token');
 
         // Tạo mảng products từ selectedItems
         const products = selectedItems.map(item => ({
@@ -116,10 +121,13 @@ const Pay = () => {
             address: address
         });
 
+
+
         // Gửi yêu cầu POST để tạo đơn hàng
         axios.post("http://127.0.0.1:8000/api/abate", {
             name: name,
             phone: phone,
+
             email: email,
             products: products, // Chuyển mảng products thành JSON
             totalMoney: totalMoney,
@@ -127,9 +135,13 @@ const Pay = () => {
             district: district,
             wards: ward,
             address: address
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
             .then(() => {
-                
+
                 // Tạo hiệu ứng bắn mảnh giấy liên tục khi đặt hàng thành công
                 const shootConfetti = () => {
                     // Bắn từ góc trái
@@ -176,6 +188,7 @@ const Pay = () => {
                             backdrop: 'rgba(0, 0, 0, 0.5)' // Đặt nền đen mờ để tương phản với confetti
                         }).then((result) => {
                             if (result.isConfirmed) {
+
                                 // Tiếp tục mua hàng
                                 navigate("/tat-ca-san-pham"); // Điều hướng đến trang cửa hàng
                             } else {
@@ -202,9 +215,99 @@ const Pay = () => {
             });
     }
 
+    //
+    function handleSubmitVNpay(e) {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+
+        // Tạo mảng products từ selectedItems
+        const products = selectedItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            photo: item.photo,
+            quantity: item.quantity,
+            price: item.price * item.quantity,
+        }));
+
+        // Log dữ liệu trước khi gửi để kiểm tra
+        console.log({
+            name: name,
+            phone: phone,
+            email: email,
+            products: products,
+            totalMoney: totalMoney,
+            provinces: province,
+            district: district,
+            wards: ward,
+            address: address
+        });
+
+
+
+        // Gửi yêu cầu POST để tạo đơn hàng
+        axios.post("http://127.0.0.1:8000/api/abate", {
+            name: name,
+            phone: phone,
+            email: email,
+            products: products, // Chuyển mảng products thành JSON
+            totalMoney: totalMoney,
+            provinces: province,
+            district: district,
+            wards: ward,
+            address: address
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then(() => {
+
+
+                // Xóa các sản phẩm đã đặt khỏi giỏ hàng sau khi đặt hàng thành công
+                const deleteRequests = products.map(product =>
+                    axios.delete(`http://127.0.0.1:8000/api/product/cart-list/${product.id}`)
+                );
+
+                // Đợi tất cả các yêu cầu xóa hoàn tất
+                Promise.all(deleteRequests)
+                    .then(() => {
+                        console.log('Các sản phẩm đã được xóa khỏi giỏ hàng');
+
+                    })
+                    .catch((err) => {
+                        console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng", err);
+                        // Điều hướng về trang chủ ngay cả khi xảy ra lỗi xóa sản phẩm
+                        //navigate("/");
+                    });
+            })
+            .catch((err) => {
+                if (err.response && err.response.status === 422) {
+                    console.error("Lỗi 422: Dữ liệu không hợp lệ", err.response.data); // Kiểm tra lỗi cụ thể từ server
+                    setErrorMessage("Lỗi 422: Dữ liệu không hợp lệ");
+                } else {
+                    setErrorMessage("Lỗi không đặt hàng thành công");
+                }
+            });
+    }
+
+
 
 
     //const fee = 40000;
+
+    const handleVnPay = (e) => {
+        e.preventDefault(); // Ngăn chặn hành động gửi form mặc định
+
+        // Gọi hàm handleSubmit để xử lý logic đặt hàng
+        handleSubmitVNpay(e); // Gọi handleSubmit với sự kiện e
+        setEditModalShow(true);
+
+    };
+
+    const closeEditModal = () => {
+        setEditModalShow(false);
+
+    };
 
 
 
@@ -282,7 +385,7 @@ const Pay = () => {
 
     return (
         <>
-            <Form className="abate" onSubmit={handleSubmit}>
+            <Form className="abate" >
                 <div className="Pay container">
                     {isLoading && (
                         <div style={overlayStyle}>
@@ -500,15 +603,34 @@ const Pay = () => {
                                                 {formatCurrency(totalMoney)} {/* Hiển thị tổng tiền */}
                                             </strong>
                                         </div>
-                                        <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán bằng tiền mặt</button>
+                                        <button onClick={handleSubmit} className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }}>Thanh toán bằng tiền mặt</button>
 
                                         <div>
-                                            <form id="vnpayForm" action="http://127.0.0.1:8000/api/vnpay_payment" method="POST">
+                                            <form id="vnpayForm" action="http://127.0.0.1:8000/api/vnpay_payment" method="POST" onClick={handleVnPay}>
                                                 <input type="hidden" name="total" value={totalMoney} />
                                                 <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }} name="redirect" >Thanh toán bằng VNPAY</button>
                                             </form>
                                         </div>
-                                        
+                                        <Modal show={editModalShow} onHide={closeEditModal}>
+                                            <Modal.Header closeButton>
+                                                <Modal.Title>Xác nhận thanh toán</Modal.Title>
+                                            </Modal.Header>
+                                            <Modal.Body>
+                                                <div className="mb-3">
+                                                    <label htmlFor="editName" className="form-label">Xác nhận thanh toán</label>
+
+                                                </div>
+
+                                            </Modal.Body>
+                                            <Modal.Footer>
+                                                <form action="http://127.0.0.1:8000/api/vnpay_payment" method="POST" name="redirect">
+                                                    <input type="hidden" name="total" value={totalMoney} />
+                                                    <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }} name="redirect" >Xác nhận</button>
+                                                </form>
+                                            </Modal.Footer>
+                                        </Modal>
+
+
                                     </div>
                                 </div>
                             </div>

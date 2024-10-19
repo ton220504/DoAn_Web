@@ -60,6 +60,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany('App\Models\Product');
     }
+    public function abates()
+    {
+        return $this->hasMany('App\Models\Abate');
+    }
 
     public function cartItems()
     {

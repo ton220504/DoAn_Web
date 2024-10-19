@@ -18,6 +18,7 @@ import WishList from './page/Product/WishList';
 import SearchItem from './Components/Home/SearchItem';
 import PostDetail from './Components/Home/PostDetail';
 import CheckoutVnpay from './page/Product/CheckoutVnpay';
+import Index from "./page/Delivery/index";
 
 
 
@@ -56,6 +57,7 @@ function App() {
           <Route path="san-pham-theo-loai/:id" element={<ProductByCategory />} />
           <Route path="search-results" element={<SearchItem />} />
           <Route path="/chi-tiet-bai-viet/:id" element={<PostDetail />} />
+          <Route path="/ca-nhan" element={<Index />} />
           
 
         </Route>

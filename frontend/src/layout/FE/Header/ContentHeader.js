@@ -7,7 +7,7 @@ import axios from "axios";
 
 const ContentHeader = () => {
 
-    
+
 
 
     const [menu, setMenu] = useState([
@@ -121,7 +121,7 @@ const ContentHeader = () => {
         setCartItemCount(cartList.length);
 
     };
-    
+
 
     return (
         <div className="content-header">
@@ -189,9 +189,13 @@ const ContentHeader = () => {
                                         <Dropdown.Item className="text-black" >
                                             Tài khoản của tôi
                                         </Dropdown.Item>
+
                                         <Dropdown.Item className="text-black" >
-                                            Thông tin cá nhân
+                                            <Link className="text-black" to="/ca-nhan">
+                                                Thông tin cá nhân
+                                            </Link>
                                         </Dropdown.Item>
+
                                         <Dropdown.Divider />
                                         <Dropdown.Item className="text-black" onClick={logout}>
                                             Đăng xuất
@@ -255,7 +259,7 @@ const ContentHeader = () => {
                                     )}
                                 </Link>
                             </div>
-                            
+
                         </div>
                     </div>
                 </div>
