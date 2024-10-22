@@ -57,17 +57,61 @@ const TabAllDelivery = (props) => {
         const token = localStorage.getItem('token');
 
         if (token) {
-            // Giải mã token để lấy userId
-            const decodedToken = jwtDecode(token);
-            const userId = decodedToken.id; // Lấy userId từ token
+            try {
+                // Giải mã token để lấy userId
+                const decodedToken = jwtDecode(token);
+                const userId = decodedToken.id; // Lấy userId từ token
 
-            // Gọi hàm getAbateByUserId với userId
-            getAbateByUserId(7);
+                // Gọi hàm getAbateByUserId với userId
+                getAbateByUserId(userId);
+            } catch (error) {
+                console.error("Lỗi khi giải mã token:", error);
+            }
         } else {
             console.error("Không tìm thấy token");
         }
     }, []); // Chạy một lần khi component được mount
 
+    const cancelAbate = async (id) => {
+        const isConfirm = await Swal.fire({
+            title: "Bạn có chắc không?",
+            text: "Bạn sẽ không thể hoàn nguyên điều này!",
+            icon: "warning", // Chỉnh sửa icon "Cảnh báo" thành "warning"
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Có, hủy nó!",
+        });
+    
+        if (!isConfirm.isConfirmed) {
+            return;
+        }
+    
+        try {
+            const response = await axios.put(`http://127.0.0.1:8000/api/abate/${id}/cancel`);
+    
+            // Cập nhật danh sách đơn hàng, loại bỏ đơn hàng đã bị hủy
+            setAbateuserid((prevAbates) =>
+                prevAbates.filter((aba) => aba.id !== id) // Lọc ra đơn hàng không có ID của đơn hàng vừa bị hủy
+            );
+    
+            // Hiển thị thông báo thành công
+            Swal.fire({
+                icon: "success",
+                title: "Đã hủy!",
+                text: "Đơn hàng đã được hủy thành công.",
+            });
+    
+        } catch (error) {
+            console.log("Lỗi khi sửa abate_status", error);
+            Swal.fire({
+                icon: "error",
+                title: "Lỗi",
+                text: "Không thể hủy đơn hàng.",
+            });
+        }
+    };
+    
     return (
         <>
             <div className="font-sans mb-3">
@@ -84,20 +128,9 @@ const TabAllDelivery = (props) => {
                                 <div className="bg-white p-4 mt-2" key={`index-${index}`}>
                                     <div className="d-flex justify-content-between d-inline">
                                         <div className="d-flex flex-row d-block">
-                                            {/* <div>
-                                                <button className="bg-danger rounded text-white me-2">Yêu thích+</button>
-                                            </div> */}
-                                            {/* <div>
-                                                <b className="me-2">| Phụ Kiện Giá Sỉ Aha24h |</b>
-                                            </div> */}
-                                            {/* <div>
-                                                <Link className="p-1 rounded me-2 bg-primary text-white border">Chat</Link>
-                                            </div>
+                                            {/* <p>{item.id}</p> */}
                                             <div>
-                                                <Link className="text-white bg-warning rounded border">Xem Shop</Link>
-                                            </div> */}
-                                            <div>
-                                                <p style={{color:"red", fontWeight:"bold", fontSize:"18px"}}>
+                                                <p style={{ color: "red", fontWeight: "bold", fontSize: "18px" }}>
                                                     Đơn hàng thứ {index + 1}
                                                 </p>
                                             </div>
@@ -123,6 +156,7 @@ const TabAllDelivery = (props) => {
                                                 <div className=""><b>{product.name}</b></div>
                                                 <span className="text-secondary">Phân loại hàng: {item.category}</span> {/* Nếu bạn có category */}
                                                 <div className="">Số lượng: {product.quantity}</div>
+                                                <div className="">giá: {formatCurrency(product.price)}</div>
                                                 <span className="text-success">Trả hàng miễn phí 15 ngày</span>
                                             </div>
                                         </div>
@@ -138,74 +172,30 @@ const TabAllDelivery = (props) => {
                                             <span className="text-danger">Đánh giá ngay và nhận 200 Xu</span>
                                         </div>
                                         <div className="btn-action">
-                                            <button className="btnDanhgia me-2 " onClick={handleShow}>Đánh Giá</button>
-                                            <button className="btnLienhe me-2">Liên Hệ Người Bán</button>
-                                            {/* <button className="btnMualai">Mua Lại</button> */}
+                                            {/* <button className="btnHuyDon me-2 " >Hủy đơn hàng</button> */}
+                                            {
+                                                item.abate_status === 0 ? (
+                                                    <button className="btnHuyDon me-2 " onClick={() => cancelAbate(item.id)} >Hủy đơn hàng</button>
+                                                ) : (
+                                                    <div>Đã hủy </div>
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>
                             );
                         })
                     ) : (
-                        <p>Không có đơn hàng nào được tìm thấy.</p>
+                        <div className="no-products">
+                            <div className="bg-img"></div>
+                        </div>
                     )}
                 </div>
 
 
             </div>
 
-            {/* <div className="font-sans">
 
-                <div className="bg-white p-4 mt-2">
-                    <div className="d-flex justify-content-between d-inline">
-                        <div className="d-flex flex-row d-block">
-                            <div>
-                                <button className="bg-danger rounded text-white me-2">Yêu thích+</button>
-                            </div>
-                            <div>
-                                <b className="me-2">| Phụ Kiện Giá Sỉ Aha24h |</b>
-                            </div>
-                            <div>
-                                <Link className="p-1 rounded me-2 bg-primary text-white border">Chat</Link>
-                            </div>
-                            <div>
-                                <Link className="text-white bg-warning rounded border">Xem Shop</Link>
-                            </div>
-                        </div>
-                        <div className="">
-                            <CiDeliveryTruck className="text-success" /><span className="ml-1 me-2 border-right text-success">Giao hàng thành công |</span>
-                            <span className="text-red-500 font-bold text-danger"><b>HOÀN THÀNH</b></span>
-                        </div>
-                    </div>
-                    <hr />
-                    <div className="d-flex flex-row align-items-center ">
-                        <Link to="/##"><img src="https://down-vn.img.susercontent.com/file/da017171936fb9d52f1df8f2ea5e39ad_tn" style={{ width: "80px", height: "80px" }} /></Link>
-                        <div className="align-content-center ms-3">
-                            <div className=""><b>Mắt kính giả cận thời trang nam nữ gọng kính mắt chữ V hàn quốc đẹp</b></div>
-                            <span className="text-secondary">Phân loại hàng: AH129 - Trong đen</span>
-                            <div className="">x1</div>
-                            <span className="text-success">Trả hàng miễn phí 15 ngày</span>
-                        </div>
-                    </div>
-                    <hr />
-                    <div className="d-flex flex-row-reverse mb-5">
-                        <span>Thành tiền: <b className="thanh-tien">100.000đ</b></span>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div className="danh-gia">
-                            Đánh giá sản phẩm trước <span className="text-danger">15-10-2024</span>
-                            <br />
-                            <span className="text-danger">Đánh giá ngay và nhận 200 Xu</span>
-                        </div>
-                        <div className="btn-action">
-                            <button className="btnDanhgia me-2 ">Đánh Giá</button>
-                            <button className="btnLienhe me-2 ">Liên Hệ Người Bán</button>
-                            <button className="btnMualai ">Mua Lại</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div> */}
 
 
             <Modal show={show} size="lg" onHide={handleClose}>

@@ -13,6 +13,7 @@ class Abate extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'abate_status',//trạng thái đơn hàng
         'phone',
         'email',
         'products',  // Đảm bảo rằng products sẽ lưu JSON

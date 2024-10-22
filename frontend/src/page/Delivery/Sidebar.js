@@ -1,12 +1,50 @@
 import { Link } from "react-router-dom";
 import "../../scss/Delivery.scss"
+import { useEffect, useState } from "react";
+import axios from "axios";
 const Sidebar = () => {
+
+    const [user, setuser] = useState([]);
+
+    const getUser = async () => {
+        try {
+            // Lấy token từ localStorage
+            const token = localStorage.getItem('token');
+            
+            // Gửi yêu cầu GET với token trong header
+            const response = await axios.get("http://127.0.0.1:8000/api/getUser", {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Thêm token vào header
+                }
+            });
+            const userData = response.data;
+            setuser(userData);
+        } catch (error) {
+            console.log("lỗi khi gọi user", error)
+        }
+    }
+    useEffect(() => {
+        getUser();
+    })
+
+
+
     return (
         <div className="sidebar">
             <div className="profile-section">
-                <img src="profile-placeholder.jpg" alt="Profile" className="profile-img" />
-                <div className="username">hongocdung222</div>
-                <button className="edit-profile">Sửa Hồ Sơ</button>
+               
+                {
+                    user.map((item, index) => {
+                        return (
+                            <div key={index}>
+                                {/* <img src="profile-placeholder.jpg" alt="Profile" className="profile-img" /> */}
+                                <div className="username">{item.name}</div>
+                                <div className="email">{item.email}</div>
+                                <button className="edit-profile">Sửa Hồ Sơ</button>
+                            </div>
+                        )
+                    })
+                }
             </div>
             <ul className="menu">
                 <Link to="/my-account"><li>Tài Khoản Của Tôi</li></Link>

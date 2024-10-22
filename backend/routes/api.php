@@ -49,7 +49,10 @@ Route::post('/user/create-user-address', [AddressController::class, 'createUser'
 Route::post('/user/address', [AddressController::class, 'store']);
 Route::get('/users', 'App\Http\Controllers\UserController@show');//8
 Route::delete('/users/{id}', 'App\Http\Controllers\UserController@deleteUser');//8
+Route::get('/getUser', [UserController::class, 'getUser']);
 
+
+//product
 Route::get('/products', 'App\Http\Controllers\ProductController@index');//8
 Route::get('/products/{id}', 'App\Http\Controllers\ProductController@show');//9
 Route::post('/products', 'App\Http\Controllers\ProductController@store');//10
@@ -71,7 +74,12 @@ Route::post('/abate', 'App\Http\Controllers\AbateController@store');
 Route::get('/abate/getAll', 'App\Http\Controllers\AbateController@getAll');
 Route::get('/abate/getAbate/{id}', 'App\Http\Controllers\AbateController@getAbateById');
 Route::get('/abate/getAbateUserId/{userId}', 'App\Http\Controllers\AbateController@getAbateByUserId');
+Route::get('/abate/getAbateByUserId_status/{userId}', 'App\Http\Controllers\AbateController@getAbateByUserId_status');
+Route::get('/abate/candAbate/{userId}', 'App\Http\Controllers\AbateController@candAbate');
+
 Route::delete('/abate/{id}', 'App\Http\Controllers\AbateController@delete');
+Route::put('/abate/{id}/update-status', 'App\Http\Controllers\AbateController@updateStatus');
+Route::put('/abate/{id}/cancel', 'App\Http\Controllers\AbateController@checkCandAbate');
 
 
 

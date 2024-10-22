@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
+
+    public function getUser(){
+        $user = JWTAuth::parseToken()->authenticate();
+        return User::where('id',$user->id)->get();
+    }
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->json()->all(), [
