@@ -1,3 +1,4 @@
+import AdminPage from "../page/Admin/admin";
 import Abate from "../page/Admin/Cart/Abate";
 import Cart from "../page/Admin/Cart/Cart";
 import Wishlist from "../page/Admin/Cart/Wishlist";
@@ -9,6 +10,7 @@ import User from "../page/Admin/User/User";
 
 const BERouter = [
     //{ path: "/admin/user", components: <TableUsers /> },
+    { path: "/admin", components: <AdminPage /> },
     { path: "/admin/product", components: <Products /> },
     { path: "/admin/category", components: <Category /> },
     { path: "/admin/productCreate", components: <ProductCreate /> },

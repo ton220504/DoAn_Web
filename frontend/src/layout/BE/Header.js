@@ -8,12 +8,13 @@ const Header = (props) => {
     return (
         <>
             <Navbar className="bg-body-tertiary" data-bs-theme="dark">
-                <Navbar.Brand to="#home"><h2>Trang quản lí</h2></Navbar.Brand>
+                <Navbar.Brand to="#home"><h2 className="ms-3">Trang quản lí</h2></Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
-                    <Navbar.Text>
+                    {/* <Navbar.Text>
                         Signed in as: <Link to="#login">Mark Otto</Link>
-                    </Navbar.Text>
+                    </Navbar.Text> */}
+                    <img className="me-3" style={{witdh:"30px", height:"30px"}} src="//bizweb.dktcdn.net/100/497/960/themes/923878/assets/favicon.png?1726452627090"/>
                 </Navbar.Collapse>
             </Navbar>
             <div className="container-fluid">

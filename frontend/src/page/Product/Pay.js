@@ -26,8 +26,8 @@ const Pay = () => {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState("");
 
-    const [paymentMethod, setPaymentMethod] = useState("");  // Lưu phương thức thanh toán
     const [editModalShow, setEditModalShow] = useState(false);
+    const [isLocationSelected, setIsLocationSelected] = useState(false); // Trạng thái chọn địa phương
 
 
 
@@ -293,7 +293,7 @@ const Pay = () => {
 
 
 
-    //const fee = 40000;
+    
 
     const handleVnPay = (e) => {
         e.preventDefault(); // Ngăn chặn hành động gửi form mặc định
@@ -331,8 +331,8 @@ const Pay = () => {
 
     // Sử dụng useEffect để tính tổng tiền
     useEffect(() => {
-        setTotalMoney(totalAmount + fee); // Cập nhật totalMoney
-    }, [totalAmount, fee]);
+        setTotalMoney(isShowComplete() ? totalAmount + fee : totalAmount); // Cập nhật totalMoney
+    }, [totalAmount, isShowComplete]);
 
     const formatCurrency = (value) => value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -515,21 +515,22 @@ const Pay = () => {
                                     <div className="method ">
                                         <div className="method-cash form-control">
                                             <div className="cash">
-                                                <input type="radio" id="cash" name="fav_language" />
+                                                {/* <input type="radio" id="cash" name="fav_language" /> */}
                                                 <label >Thanh toán tiền mặt</label>
                                             </div>
-                                            <span className="icon">
-                                                <SiCashapp />
-                                            </span>
+                                            <div className="icon">
+                                                <img style={{width:"16px", height:"16px"}} src="https://static.vecteezy.com/system/resources/previews/019/053/701/original/money-symbol-icon-png.png"/>
+                                            </div>
                                         </div>
                                         <div className="method-transfer mt-2 form-control">
                                             <div className="transfer">
-                                                <input type="radio" id="transfer" name="fav_language" />
-                                                <p >Thanh toán Momo</p>
+                                                {/* <input type="radio" id="transfer" name="fav_language" /> */}
+                                                <p >Thanh toán VnPay</p>
                                             </div>
-                                            <span className="icon">
-                                                <SiCashapp />
-                                            </span>
+                                            <div >
+                                                {/* <SiCashapp /> */}
+                                                <img src="https://bizweb.dktcdn.net/100/480/632/themes/900313/assets/payment_3.svg?1712897547805"/>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -566,7 +567,7 @@ const Pay = () => {
                                                                 </div>
                                                             </div>
                                                             <span style={{ fontWeight: "lighter", fontStyle: "italic" }}>
-                                                                {formatCurrency(item.price * item.quantity)}
+                                                                {formatCurrency(item.price)}
                                                             </span>
                                                         </li>
                                                     </React.Fragment>
@@ -599,7 +600,7 @@ const Pay = () => {
 
                                         <div className="d-flex justify-content-between">
                                             <p>Tổng tiền:</p>
-                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px" }}>
+                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px",color:"red" }}>
                                                 {formatCurrency(totalMoney)} {/* Hiển thị tổng tiền */}
                                             </strong>
                                         </div>
@@ -608,7 +609,7 @@ const Pay = () => {
                                         <div>
                                             <form id="vnpayForm" action="http://127.0.0.1:8000/api/vnpay_payment" method="POST" onClick={handleVnPay}>
                                                 <input type="hidden" name="total" value={totalMoney} />
-                                                <button className="form-control" style={{ marginTop: "10px", backgroundColor: "SlateBlue", color: "white" }} name="redirect" >Thanh toán bằng VNPAY</button>
+                                                <button className="form-control" style={{ marginTop: "10px", backgroundColor: "white", color: "SlateBlue",borderColor:"SlateBlue" }} name="redirect" >Thanh toán bằng VNPAY</button>
                                             </form>
                                         </div>
                                         <Modal show={editModalShow} onHide={closeEditModal}>

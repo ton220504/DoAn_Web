@@ -192,7 +192,7 @@ const ContentHeader = () => {
 
                                         <Dropdown.Item className="text-black" >
                                             <Link className="text-black" to="/ca-nhan">
-                                                Thông tin cá nhân
+                                                Thông tin đơn hàng
                                             </Link>
                                         </Dropdown.Item>
 

@@ -7,6 +7,7 @@ import numeral from "numeral";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { Card } from "react-bootstrap";
 
 
 
@@ -18,7 +19,7 @@ const ProductDetail = () => {
     const [name, setName] = useState('')
     const [price, setPrice] = useState(0)
 
-    const [product, setProduct] = useState(null);
+    const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
@@ -36,6 +37,8 @@ const ProductDetail = () => {
     //user
     const [loadingUser, setLoadingUser] = useState(true);
     const [user, setUser] = useState(null);
+    const [relatedProducts, setRelatedProducts] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
 
 
 
@@ -84,37 +87,128 @@ const ProductDetail = () => {
         thumbnailRef.current.scrollLeft = scrollLeft - walk;
     };
 
-    
 
 
 
 
 
+
+    // useEffect(() => {
+    //     const fetchProduct = async () => {
+    //         setLoading(true); // Bắt đầu quá trình tải dữ liệu
+    //         try {
+    //             const response = await axios.get(`http://127.0.0.1:8000/api/products/${id}`);
+
+    //             const fetchedProduct = response.data;
+    //             setProduct(fetchedProduct);
+    //             setName(fetchedProduct.name); // Cập nhật tên sản phẩm
+    //             setPrice(fetchedProduct.price); // Cập nhật giá sản phẩm
+
+    //             fetchRelatedProducts(fetchedProduct.name);
+
+    //             // Cập nhật danh sách ảnh và ảnh được chọn
+    //             const imageList = JSON.parse(fetchedProduct.photo);
+    //             setImages(imageList);
+    //             setSelectedImage(imageList[0]);
+
+    //             setLoading(false);  // Dừng loading sau khi đã fetch dữ liệu xong
+    //         } catch (error) {
+    //             console.error("Lỗi khi gọi API:", error);
+    //             setLoading(false);  // Dừng loading dù có lỗi
+    //         }
+    //     };
+
+    //     fetchProduct();
+    // }, [id]);
+
+    // const fetchRelatedProducts = async (productName) => {
+    //     try {
+    //         const response = await axios.get('http://127.0.0.1:8000/api/productSearch');
+    //         const allProducts = response.data;
+
+    //         // Lọc sản phẩm liên quan theo tên
+    //         const filteredProducts = allProducts.filter(p => p.name === productName && p.id !== id);
+    //         setRelatedProducts(filteredProducts);
+
+    //     } catch (error) {
+    //         console.error("Lỗi khi gọi API sản phẩm liên quan:", error);
+    //     }
+    // };
     useEffect(() => {
         const fetchProduct = async () => {
-            setLoading(true); // Bắt đầu quá trình tải dữ liệu
+            setLoading(true);
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/api/products/${id}`);
-
                 const fetchedProduct = response.data;
+                
+                // Gán giá trị cho `product` để sử dụng trong hàm `handleCheckout`
                 setProduct(fetchedProduct);
-                setName(fetchedProduct.name); // Cập nhật tên sản phẩm
-                setPrice(fetchedProduct.price); // Cập nhật giá sản phẩm
+                
+                // Cập nhật dữ liệu cho các trường khác
+                setName(fetchedProduct.name);
+                setPrice(fetchedProduct.price);
+                //setQuantity(fetchedProduct.quantity)
 
-                // Cập nhật danh sách ảnh và ảnh được chọn
+                // Lấy sản phẩm liên quan dựa trên tên sản phẩm hiện tại
+                fetchRelatedProducts(fetchedProduct.name);
+
+                // Cập nhật danh sách ảnh
                 const imageList = JSON.parse(fetchedProduct.photo);
                 setImages(imageList);
                 setSelectedImage(imageList[0]);
-
-                setLoading(false);  // Dừng loading sau khi đã fetch dữ liệu xong
+                
+                setLoading(false);
             } catch (error) {
                 console.error("Lỗi khi gọi API:", error);
-                setLoading(false);  // Dừng loading dù có lỗi
+                setLoading(false);
             }
         };
 
         fetchProduct();
     }, [id]);
+
+    const fetchRelatedProducts = async (productName) => {
+        try {
+            const response = await axios.get('http://127.0.0.1:8000/api/productSearch');
+            const allProducts = response.data;
+
+            // Lọc các sản phẩm liên quan có cùng tên, trừ sản phẩm hiện tại
+            const filteredProducts = allProducts.filter(p => p.name === productName && p.id !== id);
+            setRelatedProducts(filteredProducts);
+        } catch (error) {
+            console.error("Lỗi khi gọi API sản phẩm liên quan:", error);
+        }
+    };
+
+    // Hàm xử lý sự kiện khi nhấn "Thanh toán"
+    const handleCheckout = () => {
+        if (!product) {
+            console.error("Không có sản phẩm để thanh toán.");
+            return;
+        }
+
+        // Tạo thông tin sản phẩm cần mua
+        const selectedItems = [
+            {
+                id: id,
+                name: name,
+                price: price, // Giá tính theo (giá gốc * số lượng)
+                quantity: quantity,
+                photo: selectedImage, // Lấy ảnh đầu tiên
+            }
+        ];
+
+        // Tính tổng tiền dựa trên số lượng và giá
+        const totalAmount = price * quantity;
+
+        // Điều hướng đến trang thanh toán
+        navigate('/thanh-toan', { state: { selectedItems, totalAmount } });
+    };
+
+
+
+
+
     if (loading) {
         return (
             <div style={{
@@ -156,7 +250,7 @@ const ProductDetail = () => {
             });
             return; // Kết thúc hàm nếu chưa đăng nhập
         }
-    
+
         // Nếu người dùng đã đăng nhập, tiếp tục thêm sản phẩm vào giỏ hàng
         try {
             const response = await axios.post('http://127.0.0.1:8000/api/product/cart-list', {
@@ -170,7 +264,7 @@ const ProductDetail = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-    
+
             if (response.status === 200) {
                 Swal.fire({
                     icon: 'success',
@@ -189,10 +283,12 @@ const ProductDetail = () => {
                 icon: 'error',
                 title: 'Sản phẩm đã thêm vào giỏ hàng!',
             });
-           
+
         }
     };
+
     
+
 
 
     const incrementQuantity = () => setQuantity(quantity + 1);
@@ -267,7 +363,7 @@ const ProductDetail = () => {
                             <span>Giá cũ: <strike className="price-old">10.000.000đ</strike></span>
 
                         </div>
-                       
+
                         <div className="quantity-selection">
                             <span>Số lượng</span>
                             <div className="quantity-controls">
@@ -281,7 +377,7 @@ const ProductDetail = () => {
                         {/* Call-to-Action Buttons */}
                         <div className="action-buttons">
                             <div className="btn-1 ">
-                                <button className="btn-shopping">
+                                <button className="btn-shopping" onClick={handleCheckout}>
                                     <FaShoppingCart /> Mua ngay<br />
                                     <span>Giao hàng tận nơi hoặc nhận tại cửa hàng</span>
                                 </button>
@@ -415,6 +511,47 @@ const ProductDetail = () => {
 
                 {/* Additional Information and Recommendations */}
 
+                <div>
+                    <p className="mt-3">Sản phẩm liên quan</p>
+                    <div className="my-deal-phone container p-3 mt-3">
+                        <section className="content container">
+                            <div className="content-deal row p-2 justify-content-start">
+                                {/* Lặp qua danh sách sản phẩm và hiển thị */}
+                                {relatedProducts.length > 0 ? (
+                                    relatedProducts.map((item) => (
+                                        <Card className="box col-2 m-2 item-cart" key={item.id}>
+                                            {/* <div className="discount-badge">-9%</div> Phần giảm giá */}
+                                            <div className="favorite-icon" >
+                                                {/* Đổi icon dựa trên trạng thái yêu thích */}
+                                                {/* <i className={favoriteProducts.includes(item.id) ? "fas fa-heart" : "far fa-heart"}></i> */}
+                                            </div>
+                                            <Link to={`/chi-tiet-san-pham/${item.id}`}>
+                                                <Card.Img
+                                                    className="product-image"
+                                                    src={`../../../img/${JSON.parse(item.photo)[0]}`}
+                                                    alt={JSON.parse(item.photo)[0]}
+                                                />
+                                            </Link>
+                                            <div className="official-badge">Chính Hãng 100%</div> {/* Chính hãng */}
+                                            <div>
+                                                <p className="text_name">{item.name}</p>
+                                            </div>
+                                            <div className="list-group-flush">
+                                                <hr />
+                                                <p className="text_price">Giá: {formatCurrency(item.price)}</p>
+                                                <hr />
+                                                <p className="text_plus">Tặng sạc cáp nhanh 25w trị giá 250k</p>
+                                            </div>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <div>Không có sản phẩm nào để hiển thị</div>
+                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
             </div>
         </>
     );

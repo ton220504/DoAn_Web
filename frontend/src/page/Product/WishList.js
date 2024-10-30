@@ -71,7 +71,7 @@ const WishList = () => {
             await axios.delete(`http://127.0.0.1:8000/api/product/wishlist/${productId}`);
             setProduct(product.filter(item => item.id !== productId));
             toast.success("Xóa sản phẩm thành công");
-            //window.location.reload(); // Tải lại trang
+            window.location.reload(); // Tải lại trang
 
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm:", error);
