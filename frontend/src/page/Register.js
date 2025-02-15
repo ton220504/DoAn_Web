@@ -18,27 +18,31 @@ const Register = (props) => {
         e.preventDefault();
         setLoading(true);
         setErrorMessage(""); // Xóa thông báo lỗi trước đó
-
-        // Kiểm tra các trường dữ liệu trước khi gửi đi
+        if (!name) {
+            setErrorMessage("Bạn phải nhập tên.");
+            setLoading(false);
+            return;
+        }
+        if (!email) {
+            setErrorMessage("Bạn phải nhập email.");
+            setLoading(false);
+            return;
+        }
         if (!password) {
             setErrorMessage("Bạn phải nhập mật khẩu.");
             setLoading(false);
             return;
         }
-
         if (password.length < 6) {
             setErrorMessage("Mật khẩu phải dài ít nhất 6 ký tự.");
             setLoading(false);
             return;
         }
-
         if (password !== passwordConfirm) {
             setErrorMessage("Mật khẩu xác nhận không khớp.");
             setLoading(false);
             return;
         }
-
-        // Gửi yêu cầu đăng ký tới server
         axios
             .post("http://127.0.0.1:8000/api/register", {
                 name: name,
@@ -56,9 +60,6 @@ const Register = (props) => {
                 });
 
                 setLoading(false);
-
-                // Chuyển hướng đến trang đăng nhập sau 2 giây
-
             })
             .catch((err) => {
                 setLoading(false);
@@ -120,7 +121,7 @@ const Register = (props) => {
                         <Form.Control type="password" name="password" placeholder="Mật khẩu..." onChange={handleChange} />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicPasswordConfirm">
-                    <Form.Label>Nhập lại mật khẩu</Form.Label>
+                        <Form.Label>Nhập lại mật khẩu</Form.Label>
                         <Form.Control type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu..." onChange={handleChange} />
                     </Form.Group>
                 </div>

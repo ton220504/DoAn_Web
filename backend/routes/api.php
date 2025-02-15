@@ -42,6 +42,7 @@ Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index');
 Route::get('/auth', 'App\Http\Controllers\UserController@getAuthenticatedUser');
 Route::post('/register', 'App\Http\Controllers\UserController@register');//6
 Route::post('/login', [UserController::class, 'login']);//7
+Route::post('/loginadmin', [UserController::class, 'loginadmin']);//7
 
 //user
 Route::get('/user/default-address', [AddressController::class, 'show']);

@@ -186,9 +186,9 @@ const ContentHeader = () => {
                                     </Dropdown.Toggle>
 
                                     <Dropdown.Menu>
-                                        <Dropdown.Item className="text-black" >
+                                        {/* <Dropdown.Item className="text-black" >
                                             Tài khoản của tôi
-                                        </Dropdown.Item>
+                                        </Dropdown.Item> */}
 
                                         <Dropdown.Item className="text-black" >
                                             <Link className="text-black" to="/ca-nhan">

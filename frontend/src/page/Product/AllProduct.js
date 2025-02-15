@@ -112,7 +112,7 @@ const AllProduct = () => {
         <>
             <ComeBack />
             <div className="AllProduct mt-5">
-            <ToastContainer/>
+                <ToastContainer />
                 <section className="content container">
                     <div className="title-index">
                         <Link className="name-title">

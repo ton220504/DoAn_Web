@@ -47,6 +47,9 @@ const Pay = () => {
     //const [totalAmount, setTotalAmount] = useState(0);
     const fee = 40000; // Đặt phí cố định
 
+
+    
+
     // Style cho overlay
     const overlayStyle = {
         position: 'fixed',
@@ -96,9 +99,36 @@ const Pay = () => {
 
     function handleSubmit(e) {
         e.preventDefault();
+        if (!email) {
+            setErrorMessage("Vui lòng nhập email!");
+            return;
+        }
+        if (!name) {
+            setErrorMessage("Vui lòng nhập tên!");
+            return;
+        }
+        if (!phone) {
+            setErrorMessage("Vui lòng nhập số điện thoại!");
+            return;
+        }
+        if (!selectedProvince) {
+            setErrorMessage("Vui lòng chọn tỉnh, thành phố!");
+            return;
+        }
+        if (!selectedDistrict) {
+            setErrorMessage("Vui lòng chọn quận, huyện!");
+            return;
+        }
+        if (!selectedWard) {
+            setErrorMessage("Vui lòng chọn phường, xã!");
+            return;
+        }
+        if (!address) {
+            setErrorMessage("Vui lòng nhập địa chỉ giao hàng!");
+            return;
+        }
         // Giải mã token từ localStorage để lấy userId
         const token = localStorage.getItem('token');
-
         // Tạo mảng products từ selectedItems
         const products = selectedItems.map(item => ({
             id: item.id,
@@ -107,7 +137,6 @@ const Pay = () => {
             quantity: item.quantity,
             price: item.price * item.quantity,
         }));
-
         // Log dữ liệu trước khi gửi để kiểm tra
         console.log({
             name: name,
@@ -120,9 +149,6 @@ const Pay = () => {
             wards: ward,
             address: address
         });
-
-
-
         // Gửi yêu cầu POST để tạo đơn hàng
         axios.post("http://127.0.0.1:8000/api/abate", {
             name: name,
@@ -214,7 +240,7 @@ const Pay = () => {
                 }
             });
     }
-
+    
     //
     function handleSubmitVNpay(e) {
         e.preventDefault();
@@ -293,7 +319,7 @@ const Pay = () => {
 
 
 
-    
+
 
     const handleVnPay = (e) => {
         e.preventDefault(); // Ngăn chặn hành động gửi form mặc định
@@ -397,6 +423,11 @@ const Pay = () => {
                             <div className="main-header">
                                 <img className="logo" style={{ width: "300px", paddingTop: "10px", display: "block", margin: "0 auto" }} src="https://bizweb.dktcdn.net/100/497/960/themes/923878/assets/checkout_logo.png?1726452627090" />
                             </div>
+                            {errorMessage && (
+                                <div className="alert alert-danger text-center">
+                                    {errorMessage}
+                                </div>
+                            )}
                             <div className="row">
                                 <div className="col-6">
                                     <div className=" my-3">
@@ -519,7 +550,7 @@ const Pay = () => {
                                                 <label >Thanh toán tiền mặt</label>
                                             </div>
                                             <div className="icon">
-                                                <img style={{width:"16px", height:"16px"}} src="https://static.vecteezy.com/system/resources/previews/019/053/701/original/money-symbol-icon-png.png"/>
+                                                <img style={{ width: "16px", height: "16px" }} src="https://static.vecteezy.com/system/resources/previews/019/053/701/original/money-symbol-icon-png.png" />
                                             </div>
                                         </div>
                                         <div className="method-transfer mt-2 form-control">
@@ -529,7 +560,7 @@ const Pay = () => {
                                             </div>
                                             <div >
                                                 {/* <SiCashapp /> */}
-                                                <img src="https://bizweb.dktcdn.net/100/480/632/themes/900313/assets/payment_3.svg?1712897547805"/>
+                                                <img src="https://bizweb.dktcdn.net/100/480/632/themes/900313/assets/payment_3.svg?1712897547805" />
                                             </div>
                                         </div>
                                     </div>
@@ -600,7 +631,7 @@ const Pay = () => {
 
                                         <div className="d-flex justify-content-between">
                                             <p>Tổng tiền:</p>
-                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px",color:"red" }}>
+                                            <strong style={{ fontWeight: "bold", fontStyle: "italic", fontSize: "16px", color: "red" }}>
                                                 {formatCurrency(totalMoney)} {/* Hiển thị tổng tiền */}
                                             </strong>
                                         </div>
@@ -609,7 +640,7 @@ const Pay = () => {
                                         <div>
                                             <form id="vnpayForm" action="http://127.0.0.1:8000/api/vnpay_payment" method="POST" onClick={handleVnPay}>
                                                 <input type="hidden" name="total" value={totalMoney} />
-                                                <button className="form-control" style={{ marginTop: "10px", backgroundColor: "white", color: "SlateBlue",borderColor:"SlateBlue" }} name="redirect" >Thanh toán bằng VNPAY</button>
+                                                <button className="form-control" style={{ marginTop: "10px", backgroundColor: "white", color: "SlateBlue", borderColor: "SlateBlue" }} name="redirect" >Thanh toán bằng VNPAY</button>
                                             </form>
                                         </div>
                                         <Modal show={editModalShow} onHide={closeEditModal}>

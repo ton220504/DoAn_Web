@@ -90,4 +90,31 @@ class UserController extends Controller
             return response()->json(['message' => 'Bản ghi không tồn tại!'], 404);
         }
     }
+
+    public function loginadmin(Request $request)
+    {
+        $credentials = $request->json()->all();
+
+        try {
+            // Kiểm tra xem người dùng có tồn tại và đăng nhập thành công hay không
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid_credentials'], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Lấy thông tin người dùng hiện tại
+            $user = auth()->user();
+
+            // Kiểm tra nếu người dùng có `role_id` khác 1 thì trả về lỗi
+            if ($user->role_id != 1) {
+                return response()->json(['error' => 'unauthorized_access'], Response::HTTP_FORBIDDEN);
+            }
+
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'could_not_create_token'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        // Trả về thông tin người dùng và token nếu đăng nhập thành công và có `role_id` là 1
+        return response()->json(compact('user', 'token'));
+    }
+
 }

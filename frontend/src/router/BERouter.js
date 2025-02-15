@@ -10,6 +10,7 @@ import User from "../page/Admin/User/User";
 
 const BERouter = [
     //{ path: "/admin/user", components: <TableUsers /> },
+    //{ path: "/admin/login", components: <LoginAdmin /> },
     { path: "/admin", components: <AdminPage /> },
     { path: "/admin/product", components: <Products /> },
     { path: "/admin/category", components: <Category /> },

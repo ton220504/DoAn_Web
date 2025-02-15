@@ -60,13 +60,15 @@ const ProductEdit = () => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+
         try {
             // Chuyển đổi photo về định dạng mảng trước khi gửi lên server
             const updatedProduct = {
                 ...product,
                 photo: product.photo ? JSON.parse(product.photo) : [] // Chuyển đổi từ JSON về mảng hoặc giữ nguyên nếu không có ảnh
             };
-            await axios.put(`http://127.0.0.1:8000/api/products/${id}`, updatedProduct , {
+            await axios.put(`http://127.0.0.1:8000/api/products/${id}`, updatedProduct, {
                 //headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             setSuccess(true);
@@ -77,56 +79,16 @@ const ProductEdit = () => {
             console.error(err);
         }
     };
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     const formData = new FormData();
 
-    //     // Thêm tất cả các thuộc tính vào FormData
-    //     for (const key in product) {
-    //         if (key === "photo" && Array.isArray(product.photo)) {
-    //             // Nếu là mảng, thêm từng file vào FormData
-    //             product.photo.forEach((file) => {
-    //                 formData.append("photos[]", file); // Gửi từng file
-    //             });
-    //         } else {
-    //             // Nếu không phải ảnh, thêm các thuộc tính khác
-    //             formData.append(key, product[key]);
-    //         }
-    //     }
-
-    //     try {
-    //         await axios.put(`http://127.0.0.1:8000/api/products/${id}`, formData, {
-    //             headers: { 'Content-Type': 'multipart/form-data' },
-    //             // headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    //         });
-    //         setSuccess(true);
-    //         navigate("/admin/product");
-    //     } catch (err) {
-    //         setError("An unexpected error occurred. Please try again.");
-    //         console.error(err);
-    //     }
-    // };
-
-    // const handleChange = (event) => {
-    //     const { name, value } = event.target;
-    //     setProduct({
-    //         ...product,
-    //         [name]: value,
-    //     });
-
-    //     if (success) {
-    //         setSuccess(false);
-    //     }
-    // };
     const handleChange = (event) => {
         const { name, files } = event.target;
-    
+
         if (name === 'photo') {
             // Nếu người dùng chọn tệp
             if (files.length > 0) {
                 // Chuyển đổi files thành mảng tên tệp
                 const fileNames = Array.from(files).map(file => file.name);
-    
+
                 // Cập nhật trạng thái với tên tệp mới
                 setProduct(prev => ({
                     ...prev,
@@ -137,7 +99,8 @@ const ProductEdit = () => {
                 const currentPhotos = product.photo; // Lấy ảnh cũ
                 setProduct(prev => ({
                     ...prev,
-                    photo: currentPhotos // Giữ nguyên ảnh cũ
+                    photo: currentPhotos, // Giữ nguyên ảnh cũ
+
                 }));
             }
         } else {
@@ -154,9 +117,15 @@ const ProductEdit = () => {
             <div className="card shadow mb-4">
                 <div className="card-header py-3">
                     <h6 className="m-0 font-weight-bold text-primary">Edit Product</h6>
+
                 </div>
                 <div className="card-body">
                     <form onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="alert alert-danger text-center">
+                                {error}
+                            </div>
+                        )}
                         <div className="form-group">
                             <label className="small mb-1">Name</label>
                             <input
@@ -164,7 +133,7 @@ const ProductEdit = () => {
                                 name="name"
                                 value={product.name}
                                 onChange={handleChange}
-                                type="text"
+                                type="name"
                                 placeholder="Product name"
                                 required
                             />
@@ -256,7 +225,7 @@ const ProductEdit = () => {
                                 required
                             />
                         </div>
-                       
+
                         <div className="form-group">
                             <label className="small mb-1">Images</label>
                             <div>
@@ -282,7 +251,7 @@ const ProductEdit = () => {
                                 placeholder="Upload image"
                                 type="file"
                                 multiple // Cho phép chọn nhiều ảnh
-                                
+
                             />
                         </div>
                         <div className="form-group">

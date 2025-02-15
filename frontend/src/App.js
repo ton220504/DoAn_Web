@@ -19,6 +19,7 @@ import SearchItem from './Components/Home/SearchItem';
 import PostDetail from './Components/Home/PostDetail';
 import CheckoutVnpay from './page/Product/CheckoutVnpay';
 import Index from "./page/Delivery/index";
+import LoginAdmin from './page/Admin/LoginAdmin';
 
 
 
@@ -28,7 +29,7 @@ import Index from "./page/Delivery/index";
 function App() {
   return (
 
-    
+
     <BrowserRouter>
       <Routes>
         {/* <Route path="/admin/*" element={<Layoutbackend />}>
@@ -58,15 +59,15 @@ function App() {
           <Route path="search-results" element={<SearchItem />} />
           <Route path="/chi-tiet-bai-viet/:id" element={<PostDetail />} />
           <Route path="/ca-nhan" element={<Index />} />
-          
+
 
         </Route>
         <Route path="thanh-toan" element={<Pay />} />
         <Route path="checkout-vnpay" element={<CheckoutVnpay />} />
-        
+        <Route path="loginadmin" element={<LoginAdmin />} />
       </Routes>
     </BrowserRouter>
-    
+
   );
 }
 

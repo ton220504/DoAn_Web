@@ -49,88 +49,88 @@ class ProductController extends Controller
 
 
     public function store(Request $request)
-{
-    // Validate các dữ liệu đầu vào
-    $request->validate([
-        'name' => 'required',
-        'category_id' => 'required|exists:categories,id',
-        'brand' => 'required',
-        'description' => 'required',
-        'details' => 'required',
-        'price' => 'required|numeric',
-        'photo' => 'required|array', // Kiểm tra nếu photo là mảng
-        'photo.*' => 'string', // Kiểm tra từng phần tử của mảng là chuỗi
-    ]);
+    {
+        // Validate các dữ liệu đầu vào
+        $request->validate([
+            'name' => 'required',
+            'category_id' => 'required|exists:categories,id',
+            'brand' => 'required',
+            'description' => 'required',
+            'details' => 'required',
+            'price' => 'required|numeric',
+            'photo' => 'required|array', // Kiểm tra nếu photo là mảng
+            'photo.*' => 'string', // Kiểm tra từng phần tử của mảng là chuỗi
+        ]);
 
-    try {
-        // Mảng để lưu tên của từng ảnh
-        $photoNames = [];
+        try {
+            // Mảng để lưu tên của từng ảnh
+            $photoNames = [];
 
-        // Lưu tên của các ảnh từ request vào mảng
-        if ($request->has('photo')) {
-            $photoNames = $request->input('photo'); // Giả định rằng tên file được gửi dưới dạng mảng
-        }
-
-        // Đường dẫn tới thư mục img trong frontend
-        $path = 'C:/Users/ACER_HANG/Desktop/DO_AN_TTTN/frontend/public/img'; // Đường dẫn đến thư mục img trong frontend
-
-        // Kiểm tra nếu thư mục không tồn tại, tạo nó
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
-        }
-
-        // Lưu ảnh vào thư mục
-        foreach ($photoNames as $photoName) {
-            // Đường dẫn nguồn (nơi mà bạn đã tải ảnh về)
-            // Bạn có thể điều chỉnh đường dẫn này theo ý bạn
-            $sourcePath = "D:/java-projects/example14/public/images/{$photoName}"; // Thay đổi thành đường dẫn chính xác của bạn
-
-            // Đường dẫn đích
-            $destinationPath = $path . '/' . $photoName;
-
-            // Kiểm tra nếu ảnh đã tồn tại
-            if (!file_exists($destinationPath)) {
-                // Di chuyển hoặc sao chép ảnh vào thư mục đích
-                if (file_exists($sourcePath)) {
-                    // Sử dụng copy() để sao chép
-                    copy($sourcePath, $destinationPath);
-                    // Nếu bạn muốn di chuyển thay vì sao chép, sử dụng rename()
-                    // rename($sourcePath, $destinationPath);
-                }
-            } else {
-                // Log hoặc xử lý khi file đã tồn tại
-                \Log::info("File {$photoName} đã tồn tại, không cần sao chép.");
+            // Lưu tên của các ảnh từ request vào mảng
+            if ($request->has('photo')) {
+                $photoNames = $request->input('photo'); // Giả định rằng tên file được gửi dưới dạng mảng
             }
+
+            // Đường dẫn tới thư mục img trong frontend
+            $path = 'C:/Users/ACER_HANG/Desktop/DO_AN_TTTN/frontend/public/img'; // Đường dẫn đến thư mục img trong frontend
+
+            // Kiểm tra nếu thư mục không tồn tại, tạo nó
+            if (!file_exists($path)) {
+                mkdir($path, 0755, true);
+            }
+
+            // Lưu ảnh vào thư mục
+            foreach ($photoNames as $photoName) {
+                // Đường dẫn nguồn (nơi mà bạn đã tải ảnh về)
+                // Bạn có thể điều chỉnh đường dẫn này theo ý bạn
+                //$sourcePath = "D:/java-projects/example14/public/images/{$photoName}"; // Thay đổi thành đường dẫn chính xác của bạn
+                $sourcePath = "D:/img/{$photoName}";
+                // Đường dẫn đích
+                $destinationPath = $path . '/' . $photoName;
+
+                // Kiểm tra nếu ảnh đã tồn tại
+                if (!file_exists($destinationPath)) {
+                    // Di chuyển hoặc sao chép ảnh vào thư mục đích
+                    if (file_exists($sourcePath)) {
+                        // Sử dụng copy() để sao chép
+                        copy($sourcePath, $destinationPath);
+                        // Nếu bạn muốn di chuyển thay vì sao chép, sử dụng rename()
+                        // rename($sourcePath, $destinationPath);
+                    }
+                } else {
+                    // Log hoặc xử lý khi file đã tồn tại
+                    \Log::info("File {$photoName} đã tồn tại, không cần sao chép.");
+                }
+            }
+
+            // Chuyển đổi mảng tên ảnh thành chuỗi JSON
+            $photoJson = json_encode($photoNames);
+
+            // Lưu sản phẩm
+            $product = Product::create([
+                'user_id' => $request->user_id ?? 1,
+                'deal_id' => $request->deal_id ?? null,
+                'category_id' => $request->category_id,
+                'brand' => $request->brand,
+                'name' => $request->name,
+                'description' => $request->description,
+                'details' => $request->details,
+                'price' => $request->price,
+                'photo' => $photoJson, // Lưu tên ảnh dưới dạng JSON
+            ]);
+
+            return response()->json([
+                'message' => 'Product created successfully!',
+                'product' => $product
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Product creation failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Product creation failed!',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Chuyển đổi mảng tên ảnh thành chuỗi JSON
-        $photoJson = json_encode($photoNames);
-
-        // Lưu sản phẩm
-        $product = Product::create([
-            'user_id' => $request->user_id ?? 1,
-            'deal_id' => $request->deal_id ?? null,
-            'category_id' => $request->category_id,
-            'brand' => $request->brand,
-            'name' => $request->name,
-            'description' => $request->description,
-            'details' => $request->details,
-            'price' => $request->price,
-            'photo' => $photoJson, // Lưu tên ảnh dưới dạng JSON
-        ]);
-
-        return response()->json([
-            'message' => 'Product created successfully!',
-            'product' => $product
-        ]);
-    } catch (\Exception $e) {
-        \Log::error('Product creation failed: ' . $e->getMessage());
-        return response()->json([
-            'message' => 'Product creation failed!',
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
 
 
 
@@ -166,48 +166,6 @@ class ProductController extends Controller
         }
     }
 
-
-
-
-
-
-
-    // public function update(Request $request, $id)
-    // {
-    //     // Find the product
-    //     $product = Product::findOrFail($id);
-
-    //     // Validate input
-    //     $validatedData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'category_id' => 'required|exists:categories,id',
-    //         'brand' => 'required|string|max:255',
-    //         'description' => 'required|string',
-    //         'details' => 'required|string',
-    //         'price' => 'required|numeric',
-    //         'photo' => 'required|array', // Kiểm tra nếu photo là mảng
-    //         'photo.*' => 'string', // Kiểm tra từng phần tử của mảng là chuỗi
-
-    //     ]);
-    //     // Xử lý cập nhật ảnh
-    //  if (isset($validatedData['photo'])) {
-    //      // Nếu có ảnh mới được gửi lên
-    //      // Giả sử product->photo là mảng các tên file hiện tại
-    //      $currentPhotos = json_decode($product->photo, true); // Chuyển đổi từ JSON thành mảng
-    //      // Thêm các ảnh mới vào mảng hiện tại
-    //      $updatedPhotos = array_merge($currentPhotos, $validatedData['photo']);
-    //      // Lưu mảng ảnh mới vào thuộc tính photo của sản phẩm
-    //      $product->photo = json_encode($updatedPhotos); // Chuyển đổi lại thành JSON
-    //  }
-
-
-    //     // Update product attributes
-    //     $product->update($validatedData);
-
-
-
-    //     return response()->json(['message' => 'Product updated successfully', 'product' => $product], 200);
-    // }
     public function update(Request $request, $id)
     {
         // Tìm sản phẩm
@@ -249,7 +207,7 @@ class ProductController extends Controller
             foreach ($photoNames as $photoName) {
                 // Đường dẫn nguồn (nơi mà bạn đã tải ảnh về)
                 // Bạn có thể điều chỉnh đường dẫn này theo ý bạn
-                $sourcePath = "D:/java-projects/example14/public/images/{$photoName}"; // Thay đổi thành đường dẫn chính xác của bạn
+                $sourcePath = "D:/img/{$photoName}"; // Thay đổi thành đường dẫn chính xác của bạn
 
                 // Đường dẫn đích
                 $destinationPath = $path . '/' . $photoName;

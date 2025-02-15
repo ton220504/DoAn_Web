@@ -47,11 +47,6 @@ const Header = () => {
         }
 
     }
-    // const handlekeyDown = (e) => {
-    //     if (e.key === 'Enter') {  // Kiểm tra nếu phím Enter được nhấn
-    //         window.location.href = `/search-results?query=${keySearch}`;  // Điều hướng đến trang kết quả tìm kiếm
-    //     }
-    // };
     // Hàm xử lý khi người dùng nhấn phím Enter
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {  // Kiểm tra nếu phím Enter được nhấn

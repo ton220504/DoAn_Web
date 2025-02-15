@@ -42,7 +42,7 @@ const ProductCreate = ({ userId }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         switch (name) {
-            case 'name':
+            case "name":
                 setName(value);
                 break;
             case 'category_id':
@@ -78,7 +78,6 @@ const ProductCreate = ({ userId }) => {
 
     function handleSubmit(e) {
         e.preventDefault();
-
         // Tạo FormData để gửi file và dữ liệu
         const formData = new FormData();
         formData.append("name", name);
@@ -87,15 +86,11 @@ const ProductCreate = ({ userId }) => {
         formData.append("price", price);
         formData.append("description", description);
         formData.append("details", details);
-
-
         // Thêm tất cả tên file vào formData dưới dạng mảng
         photo.forEach((photoItem) => {
             formData.append("photo[]", photoItem); // Sử dụng "photo[]" để thêm phần tử vào mảng
         });
-
         console.log(formData.getAll('photo[]')); // Kiểm tra đầu ra của mảng tên file
-
         console.log({
             name: name,
             category_id: category_id,
@@ -105,7 +100,6 @@ const ProductCreate = ({ userId }) => {
             details: details,
             photo: photo
         });
-
         // Gửi yêu cầu POST để tạo sản phẩm với file
         axios.post("http://127.0.0.1:8000/api/products", formData, {
             headers: {
@@ -121,7 +115,7 @@ const ProductCreate = ({ userId }) => {
                 }).then(() => {
                     // Chuyển hướng đến trang chủ sau khi người dùng nhấn nút "OK"
                     navigate("/admin/product");
-                                       
+
                 });
             })
             .catch((err) => {
@@ -140,19 +134,28 @@ const ProductCreate = ({ userId }) => {
             <div className="card shadow mb-4">
                 <div className="card-header py-3">
                     <h6 className="m-0 font-weight-bold text-primary">Thêm sản phẩm</h6>
+                    {errorMessage && (
+                        <div className="alert alert-danger text-center">
+                            {errorMessage}
+                        </div>
+                    )}
                 </div>
+
                 <div className="card-body">
+
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label className="small mb-1">Tên sản phẩm</label>
-                            <input
-                                className="form-control"
-                                name="name"
-                                onChange={handleChange}
-                                type="text"
-                                placeholder="Tên sản phẩm..."
-                                required
-                            />
+                            <div>
+                                <input
+                                    className="form-control"
+                                    name="name"
+                                    onChange={handleChange}
+                                    type="name"
+                                    placeholder="Tên sản phẩm..."
+                                    required
+                                />
+                            </div>
                         </div>
                         <div className="form-group">
                             <label className="small mb-1">Loại</label>
@@ -175,7 +178,7 @@ const ProductCreate = ({ userId }) => {
                                 className="form-control"
                                 name="brand"
                                 onChange={handleChange}
-                                type="text"
+                                type="brand"
                                 placeholder="Thương hiệu..."
                                 required
                             />
@@ -200,6 +203,7 @@ const ProductCreate = ({ userId }) => {
                                 multiple
                                 accept="image/*"
                                 onChange={handleFileChange} // Xử lý thay đổi khi chọn file
+                                required
                             />
                         </div>
 
